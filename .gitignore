@@ -2,5 +2,7 @@
 /*/spark-warehouse/
 /metastore_db/
 /*/metastore_db/
+/__pycache__/
+/*/__pycache__/
 *.pyc
 *.log
