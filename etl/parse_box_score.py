@@ -38,9 +38,9 @@ schema = types.StructType([
 ])
 
 # Main
-def main():
+def main(output):
     # Read in CSV data and hold onto filename
-    df = spark.read.csv(os.path.join(DATA_DIR, 'Men/*/*/*/*/Box Score - All (Parsed).csv'), header='true', schema=schema) \
+    df = spark.read.csv(os.path.join(DATA_DIR, '*/*/*/*/*/Box Score - All (Parsed).csv'), header='true', schema=schema) \
         .withColumn('filename', functions.input_file_name()) \
         .withColumn('split', functions.split('filename', '/'))
 
@@ -52,20 +52,22 @@ def main():
         .withColumn('File_Team', df['split'].getItem(7)) \
         .withColumn('Date', df['split'].getItem(8)) \
         .withColumn('Team2', functions.regexp_replace('File_team', '%20', ' ')) \
-        .drop(df['split'])
-        #.drop(df['Team']) \
-        #.dropDuplicates(['Team_Name', 'Date', 'Time', 'Player'])
-        #.drop(df['filename']) \
-        #.withColumn("id", functions.monotonically_increasing_id()) \
+        .drop(df['split']) \
+        .na.fill(0)
+
+    new_cols = ['opp_' + col for col in df.columns]
     teams = df.where(df['Player'] == 'Totals')
-    # teams2 = teams
-    # conds = [teams['File_Team'] == teams2['File_Team'], teams['Time'] == teams2['Time'], teams['Date'] == teams2['Date'], teams['Team'] != teams2['Team']]
-    # #team.where((team['Date'] == '01.04.2017') & (team['File_Team'] == 'Texas')).show()
-    # teams.join(teams2, conds).show()
-    # #df.show()
-    #df = df.dropDuplicates(['Team_Name', 'Date', 'Time', 'Player'])
-    teams.na.fill(0).show()
+    teams2 = teams.toDF(*new_cols)
+    conds = [teams['File_Team'] == teams2['opp_File_Team'], teams['Time'] == teams2['opp_Time'], teams['Date'] == teams2['opp_Date'], teams['Team'] != teams2['opp_Team']]
+    data = teams.join(teams2, conds)
+    keep_cols = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'FGM', 'FGA', \
+        '3FG', '3FGA', 'FT', 'FTA', 'PTS', 'ORebs', 'DRebs', 'Tot Reb', 'AST', 'TO', 'STL', \
+        'BLK', 'Fouls',  'opp_Team', 'opp_FGM', 'opp_FGA', 'opp_3FG', 'opp_3FGA', 'opp_FT', 'opp_FTA',\
+        'opp_PTS', 'opp_ORebs', 'opp_DRebs', 'opp_Tot Reb', 'opp_AST', 'opp_TO', 'opp_STL', 'opp_BLK', 'opp_Fouls', ]
+
+    data.select(keep_cols).write.csv(output, mode='overwrite', header=True)
+
 
 if __name__ == '__main__':
-    sc = spark.sparkContext
-    main()
+    output = sys.argv[1]
+    main(output)
