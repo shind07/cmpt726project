@@ -1,13 +1,14 @@
-import sys, re, math, os
+import sys, os
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 from pyspark.sql import SparkSession, functions, types, Row
 from pyspark import SparkConf, SparkContext
-app_name = "NASA Logs Correlation"
+app_name = "NCAA Basketball"
 spark = SparkSession.builder.appName(app_name).getOrCreate()
 assert spark.version >= '2.3' # make sure we have Spark 2.3+
 spark.sparkContext.setLogLevel('WARN')
 
-DATA_DIR = os.path.join(os.environ['HOME'], 'Regular-test')
+from config import data_directory
+DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
 # Main
 def main():
