@@ -1,3 +1,5 @@
 /spark-warehouse/
 /*/spark-warehouse/
+/metastore_db/
+/*/metastore_db/
 *.pyc
