@@ -11,7 +11,7 @@ spark.sparkContext.setLogLevel('WARN')
 from config import data_directory
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
-# Specify schema for out data
+# Specify schema for our data
 schema = types.StructType([
     types.StructField('Date', types.StringType(), False),
     types.StructField('Time', types.StringType(), False),
@@ -44,28 +44,31 @@ def main(output):
         .withColumn('filename', functions.input_file_name()) \
         .withColumn('split', functions.split('filename', '/'))
 
-    # Parse the file name into columns
+    # Parse the file name into columns, fill 'null' entries with 0
     df = df \
         .withColumn('Gender', df['split'].getItem(4)) \
         .withColumn('Year', df['split'].getItem(5)) \
         .withColumn('Divison', df['split'].getItem(6)) \
         .withColumn('File_Team', df['split'].getItem(7)) \
-        .withColumn('Date', df['split'].getItem(8)) \
-        .withColumn('Team2', functions.regexp_replace('File_team', '%20', ' ')) \
-        .drop(df['split']) \
         .na.fill(0)
 
-    new_cols = ['opp_' + col for col in df.columns]
+    # Only keep the Team data - ignore player data
     teams = df.where(df['Player'] == 'Totals')
+
+    # Make two copies of the data and join the games together so
+    # each row will have full data for the game.
+    new_cols = ['opp_' + col for col in df.columns]
     teams2 = teams.toDF(*new_cols)
-    conds = [teams['File_Team'] == teams2['opp_File_Team'], teams['Time'] == teams2['opp_Time'], teams['Date'] == teams2['opp_Date'], teams['Team'] != teams2['opp_Team']]
-    data = teams.join(teams2, conds)
-    keep_cols = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'FGM', 'FGA', \
+    join_conditions = [teams['File_Team'] == teams2['opp_File_Team'], teams['Time'] == teams2['opp_Time'], \
+        teams['Date'] == teams2['opp_Date'], teams['Team'] != teams2['opp_Team']]
+    full_data = teams.join(teams2, join_conditions)
+
+    # Keep columns we want, write data.
+    final_columns = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'FGM', 'FGA', \
         '3FG', '3FGA', 'FT', 'FTA', 'PTS', 'ORebs', 'DRebs', 'Tot Reb', 'AST', 'TO', 'STL', \
         'BLK', 'Fouls',  'opp_Team', 'opp_FGM', 'opp_FGA', 'opp_3FG', 'opp_3FGA', 'opp_FT', 'opp_FTA',\
         'opp_PTS', 'opp_ORebs', 'opp_DRebs', 'opp_Tot Reb', 'opp_AST', 'opp_TO', 'opp_STL', 'opp_BLK', 'opp_Fouls', ]
-
-    data.select(keep_cols).write.csv(output, mode='overwrite', header=True)
+    full_data.select(final_columns).write.csv(output, mode='overwrite', header=True)
 
 
 if __name__ == '__main__':
