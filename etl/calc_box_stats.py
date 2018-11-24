@@ -21,10 +21,19 @@ schema = types.StructType(
 # Main
 def main(input, output):
     # Read in CSV data and hold onto filename
-    df = spark.read.csv(input, schema=schema, header='true') # s[s.find("(")+1:s.find(")")]
+    df = spark.read.csv(input, schema=schema, header='true')
 
-    df = df.withColumn('GP', functions.lit(1).cast(types.IntegerType())).groupby(['Gender', 'Year', 'Divison', 'Team']).sum()
+    # Sum all data by year for each team
+    df = df \
+        .withColumn('GP', functions.lit(1).cast(types.IntegerType())) \
+        .withColumn('Win', functions.when(df['PTS'] > df['opp_PTS'], 1).otherwise(0)) \
+        .withColumn('Loss', functions.when(df['PTS'] < df['opp_PTS'], 1).otherwise(0)) \
+        .groupby(['Gender', 'Year', 'Divison', 'Team']).sum()
+
+    # Rename grouped columns to make for easier calculations
     df = df.toDF(*renameGroupedColumns(df.columns))
+
+    # calculate new columns
     df = df \
         .withColumn('OREB%', functions.round((df['ORebs'] / (df['ORebs'] + df['opp_DRebs'])), 2)) \
         .withColumn('DREB%', functions.round((df['DRebs'] / (df['DRebs'] + df['opp_ORebs'])), 2)) \
@@ -43,7 +52,7 @@ def main(input, output):
         .withColumn('STL%', df['STL'] / df['opp_POSS']) \
         .withColumn('BLK%', df['BLK'] / df['opp_FGA'])
 
-    #df.select(['Team', 'POSS', 'opp_POSS', 'PPP', 'opp_PPP', 'eFG%','opp_eFG%', 'OREB%', 'DREB%', 'AST%', 'TOV%', 'FTr', '3PAr', 'STL%', 'BLK%']).show()
+    # Write out final data
     df.write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
