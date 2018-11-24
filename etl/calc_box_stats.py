@@ -11,27 +11,40 @@ spark.sparkContext.setLogLevel('WARN')
 from config import data_directory
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
+box_score_columns = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'FGM', 'FGA', \
+        '3FG', '3FGA', 'FT', 'FTA', 'PTS', 'ORebs', 'DRebs', 'Tot Reb', 'AST', 'TO', 'STL', \
+        'BLK', 'Fouls',  'opp_Team', 'opp_FGM', 'opp_FGA', 'opp_3FG', 'opp_3FGA', 'opp_FT', 'opp_FTA',\
+        'opp_PTS', 'opp_ORebs', 'opp_DRebs', 'opp_Tot Reb', 'opp_AST', 'opp_TO', 'opp_STL', 'opp_BLK', 'opp_Fouls', ]
+
+string_fields = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'opp_Team']
+schema = types.StructType(
+    [types.StructField(field_name, types.StringType(), True) if field_name in string_fields else types.StructField(field_name, types.IntegerType(), True) \
+    for field_name in box_score_columns]
+)
+
 # Main
 def main(input, output):
     # Read in CSV data and hold onto filename
-    df = spark.read.csv(input, header='true')
-    df = df \
-        .withColumn('OREB%', functions.round((df['ORebs'] / (df['ORebs'] + df['opp_DRebs'])), 2)) \
-        .withColumn('DREB%', functions.round((df['DRebs'] / (df['DRebs'] + df['opp_ORebs'])), 2)) \
-        .withColumn('POSS', df['FGA'] + df['TO'] + 0.475*df['FTA'] - df['ORebs']) \
-        .withColumn('opp_POSS', df['opp_FGA'] + df['opp_TO'] + 0.475*df['opp_FTA'] - df['opp_ORebs']) \
-        .withColumn('AST%', df['AST'] / df['FGM'])
+    df = spark.read.csv(input, schema=schema, header='true')
 
-    df = df \
-        .withColumn('PPP', df['PTS'] / df['POSS']) \
-        .withColumn('opp_PPP', df['opp_PTS'] / df['opp_POSS']) \
-        .withColumn('eFG%', (df['FGM'] + 0.5*df['3FG']) / df['FGA']) \
-        .withColumn('opp_eFG%', (df['opp_FGM'] + 0.5*df['opp_3FG']) / df['opp_FGA']) \
-        .withColumn('TOV%', df['TO'] / df['POSS']) \
-        .withColumn('FTr', df['FTA'] / df['FGA']) \
-        .withColumn('3PAr', df['3FGA'] / df['FGA']) \
-        .withColumn('STL%', df['STL'] / df['opp_POSS']) \
-        .withColumn('BLK%', df['BLK'] / df['opp_FGA'])
+    df = df.groupby(['Gender', 'Year', 'Divison', 'Team']).sum()#'3FG', '3FGA', 'FT', 'FTA', 'PTS')
+    # df = df \
+    #     .withColumn('OREB%', functions.round((df['ORebs'] / (df['ORebs'] + df['opp_DRebs'])), 2)) \
+    #     .withColumn('DREB%', functions.round((df['DRebs'] / (df['DRebs'] + df['opp_ORebs'])), 2)) \
+    #     .withColumn('POSS', df['FGA'] + df['TO'] + 0.475*df['FTA'] - df['ORebs']) \
+    #     .withColumn('opp_POSS', df['opp_FGA'] + df['opp_TO'] + 0.475*df['opp_FTA'] - df['opp_ORebs']) \
+    #     .withColumn('AST%', df['AST'] / df['FGM'])
+    #
+    # df = df \
+    #     .withColumn('PPP', df['PTS'] / df['POSS']) \
+    #     .withColumn('opp_PPP', df['opp_PTS'] / df['opp_POSS']) \
+    #     .withColumn('eFG%', (df['FGM'] + 0.5*df['3FG']) / df['FGA']) \
+    #     .withColumn('opp_eFG%', (df['opp_FGM'] + 0.5*df['opp_3FG']) / df['opp_FGA']) \
+    #     .withColumn('TOV%', df['TO'] / df['POSS']) \
+    #     .withColumn('FTr', df['FTA'] / df['FGA']) \
+    #     .withColumn('3PAr', df['3FGA'] / df['FGA']) \
+    #     .withColumn('STL%', df['STL'] / df['opp_POSS']) \
+    #     .withColumn('BLK%', df['BLK'] / df['opp_FGA'])
 
     #df.select(['Team', 'POSS', 'opp_POSS', 'PPP', 'opp_PPP', 'eFG%','opp_eFG%', 'OREB%', 'DREB%', 'AST%', 'TOV%', 'FTr', '3PAr', 'STL%', 'BLK%']).show()
     df.write.csv(output, mode='overwrite', header=True, compression='gzip')
