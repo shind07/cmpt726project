@@ -11,13 +11,30 @@ spark.sparkContext.setLogLevel('WARN')
 from config import data_directory
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
-
 # Main
 def main(input):
     # Read in CSV data and hold onto filename
-    print(input)
     df = spark.read.csv(input, header='true')
-    df.show()
+    df = df \
+        .withColumn('OREB%', functions.round((df['ORebs'] / (df['ORebs'] + df['opp_DRebs'])), 2)) \
+        .withColumn('DREB%', functions.round((df['DRebs'] / (df['DRebs'] + df['opp_ORebs'])), 2)) \
+        .withColumn('POSS', df['FGA'] + df['TO'] + 0.475*df['FTA'] - df['ORebs']) \
+        .withColumn('opp_POSS', df['opp_FGA'] + df['opp_TO'] + 0.475*df['opp_FTA'] - df['opp_ORebs']) \
+        .withColumn('AST%', df['AST'] / df['FGM'])
+
+    df = df \
+        .withColumn('PPP', df['PTS'] / df['POSS']) \
+        .withColumn('opp_PPP', df['opp_PTS'] / df['opp_POSS']) \
+        .withColumn('eFG%', (df['FGM'] + 0.5*df['3FG']) / df['FGA']) \
+        .withColumn('opp_eFG%', (df['opp_FGM'] + 0.5*df['opp_3FG']) / df['opp_FGA']) \
+        .withColumn('TOV%', df['TO'] / df['POSS']) \
+        .withColumn('FTr', df['FTA'] / df['FGA']) \
+        .withColumn('3PAr', df['3FGA'] / df['FGA']) \
+        .withColumn('STL%', df['STL'] / df['opp_POSS']) \
+        .withColumn('BLK%', df['BLK'] / df['opp_FGA'])
+
+    df.select(['Team', 'POSS', 'opp_POSS', 'PPP', 'opp_PPP', 'eFG%','opp_eFG%', 'OREB%', 'DREB%', 'AST%', 'TOV%', 'FTr', '3PAr', 'STL%', 'BLK%']).show()
+
 if __name__ == '__main__':
     input = sys.argv[1]
     main(input)
