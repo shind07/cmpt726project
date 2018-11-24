@@ -2,6 +2,7 @@ import sys, os
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 from pyspark.sql import SparkSession, functions, types, Row
 from pyspark import SparkConf, SparkContext
+from resources import box_score_columns
 app_name = "NCAA Basketball"
 spark = SparkSession.builder.appName(app_name).getOrCreate()
 assert spark.version >= '2.3' # make sure we have Spark 2.3+
@@ -64,10 +65,6 @@ def main(output):
     full_data = teams.join(teams2, join_conditions)
 
     # Keep columns we want, write data.
-    final_columns = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'FGM', 'FGA', \
-        '3FG', '3FGA', 'FT', 'FTA', 'PTS', 'ORebs', 'DRebs', 'Tot Reb', 'AST', 'TO', 'STL', \
-        'BLK', 'Fouls',  'opp_Team', 'opp_FGM', 'opp_FGA', 'opp_3FG', 'opp_3FGA', 'opp_FT', 'opp_FTA',\
-        'opp_PTS', 'opp_ORebs', 'opp_DRebs', 'opp_Tot Reb', 'opp_AST', 'opp_TO', 'opp_STL', 'opp_BLK', 'opp_Fouls', ]
     full_data.select(final_columns).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':

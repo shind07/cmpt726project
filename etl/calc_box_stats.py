@@ -2,7 +2,7 @@ import sys, os
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 from pyspark.sql import SparkSession, functions, types, Row
 from pyspark import SparkConf, SparkContext
-from resources import renameGroupedColumns
+from resources import renameGroupedColumns, box_score_columns
 app_name = "NCAA Basketball"
 spark = SparkSession.builder.appName(app_name).getOrCreate()
 assert spark.version >= '2.3' # make sure we have Spark 2.3+
@@ -11,11 +11,6 @@ spark.sparkContext.setLogLevel('WARN')
 # Set directory that contains data
 from config import data_directory
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
-
-box_score_columns = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'FGM', 'FGA', \
-        '3FG', '3FGA', 'FT', 'FTA', 'PTS', 'ORebs', 'DRebs', 'Tot Reb', 'AST', 'TO', 'STL', \
-        'BLK', 'Fouls',  'opp_Team', 'opp_FGM', 'opp_FGA', 'opp_3FG', 'opp_3FGA', 'opp_FT', 'opp_FTA',\
-        'opp_PTS', 'opp_ORebs', 'opp_DRebs', 'opp_Tot Reb', 'opp_AST', 'opp_TO', 'opp_STL', 'opp_BLK', 'opp_Fouls', ]
 
 string_fields = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'opp_Team']
 schema = types.StructType(
@@ -28,8 +23,7 @@ def main(input, output):
     # Read in CSV data and hold onto filename
     df = spark.read.csv(input, schema=schema, header='true') # s[s.find("(")+1:s.find(")")]
 
-    df = df.withColumn('GP', functions.lit(1).cast(types.IntegerType())).groupby(['Gender', 'Year', 'Divison', 'Team']).sum()#'3FG', '3FGA', 'FT', 'FTA', 'PTS')
-    #new_cols = [c[c.find("(")+1:c.find(")")] if '(' in c else c for c in df.columns]
+    df = df.withColumn('GP', functions.lit(1).cast(types.IntegerType())).groupby(['Gender', 'Year', 'Divison', 'Team']).sum()
     df = df.toDF(*renameGroupedColumns(df.columns))
     df = df \
         .withColumn('OREB%', functions.round((df['ORebs'] / (df['ORebs'] + df['opp_DRebs'])), 2)) \
