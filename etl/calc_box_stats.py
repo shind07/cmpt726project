@@ -2,6 +2,7 @@ import sys, os
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 from pyspark.sql import SparkSession, functions, types, Row
 from pyspark import SparkConf, SparkContext
+from resources import renameGroupedColumns
 app_name = "NCAA Basketball"
 spark = SparkSession.builder.appName(app_name).getOrCreate()
 assert spark.version >= '2.3' # make sure we have Spark 2.3+
@@ -28,8 +29,8 @@ def main(input, output):
     df = spark.read.csv(input, schema=schema, header='true') # s[s.find("(")+1:s.find(")")]
 
     df = df.withColumn('GP', functions.lit(1).cast(types.IntegerType())).groupby(['Gender', 'Year', 'Divison', 'Team']).sum()#'3FG', '3FGA', 'FT', 'FTA', 'PTS')
-    new_cols = [c[c.find("(")+1:c.find(")")] if '(' in c else c for c in df.columns]
-    df = df.toDF(*new_cols)
+    #new_cols = [c[c.find("(")+1:c.find(")")] if '(' in c else c for c in df.columns]
+    df = df.toDF(*renameGroupedColumns(df.columns))
     df = df \
         .withColumn('OREB%', functions.round((df['ORebs'] / (df['ORebs'] + df['opp_DRebs'])), 2)) \
         .withColumn('DREB%', functions.round((df['DRebs'] / (df['DRebs'] + df['opp_ORebs'])), 2)) \
