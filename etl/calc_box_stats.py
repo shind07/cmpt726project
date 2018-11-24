@@ -52,8 +52,15 @@ def main(input, output):
         .withColumn('STL%', df['STL'] / df['opp_POSS']) \
         .withColumn('BLK%', df['BLK'] / df['opp_FGA'])
 
+    df = df \
+        .withColumn('ORtg', df['PPP']*100) \
+        .withColumn('DRtg', df['opp_PPP']*100)
+
+    df = df.withColumn('NetRtg', df['ORtg'] - df['DRtg'])
+
+    print(df.count())
     # Write out final data
-    df.write.csv(output, mode='overwrite', header=True, compression='gzip')
+    df.coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     input = sys.argv[1]
