@@ -12,7 +12,7 @@ from config import data_directory
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
 # Main
-def main(input):
+def main(input, output):
     # Read in CSV data and hold onto filename
     df = spark.read.csv(input, header='true')
     df = df \
@@ -33,8 +33,10 @@ def main(input):
         .withColumn('STL%', df['STL'] / df['opp_POSS']) \
         .withColumn('BLK%', df['BLK'] / df['opp_FGA'])
 
-    df.select(['Team', 'POSS', 'opp_POSS', 'PPP', 'opp_PPP', 'eFG%','opp_eFG%', 'OREB%', 'DREB%', 'AST%', 'TOV%', 'FTr', '3PAr', 'STL%', 'BLK%']).show()
+    #df.select(['Team', 'POSS', 'opp_POSS', 'PPP', 'opp_PPP', 'eFG%','opp_eFG%', 'OREB%', 'DREB%', 'AST%', 'TOV%', 'FTr', '3PAr', 'STL%', 'BLK%']).show()
+    df.write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     input = sys.argv[1]
-    main(input)
+    output = sys.argv[2]
+    main(input, output)
