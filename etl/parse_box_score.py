@@ -62,10 +62,11 @@ def main(output):
     teams2 = teams.toDF(*new_cols)
     join_conditions = [teams['File_Team'] == teams2['opp_File_Team'], teams['Time'] == teams2['opp_Time'], \
         teams['Date'] == teams2['opp_Date'], teams['Team'] != teams2['opp_Team']]
-    full_data = teams.join(teams2, join_conditions)
+    full_data = teams.join(teams2, join_conditions) \
+        .dropDuplicates(['Date','Time', 'Team', 'opp_Team'])
 
     # Keep columns we want, write data.
-    full_data.select(final_columns).write.csv(output, mode='overwrite', header=True, compression='gzip')
+    full_data.select(box_score_columns).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     output = sys.argv[1]
