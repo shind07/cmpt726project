@@ -12,6 +12,7 @@ spark.sparkContext.setLogLevel('WARN')
 from config import data_directory
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
+# Create Schema
 string_fields = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'opp_Team']
 schema = types.StructType(
     [types.StructField(field_name, types.StringType(), True) if field_name in string_fields else types.StructField(field_name, types.IntegerType(), True) \
@@ -58,7 +59,6 @@ def main(input, output):
 
     df = df.withColumn('NetRtg', df['ORtg'] - df['DRtg'])
 
-    print(df.count())
     # Write out final data
     df.coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
