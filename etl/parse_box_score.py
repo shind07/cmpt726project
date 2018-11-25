@@ -49,7 +49,7 @@ def main(output):
     df = df \
         .withColumn('Gender', df['split'].getItem(4)) \
         .withColumn('Year', df['split'].getItem(5)) \
-        .withColumn('Divison', df['split'].getItem(6)) \
+        .withColumn('Division', df['split'].getItem(6)) \
         .withColumn('File_Team', df['split'].getItem(7)) \
         .na.fill(0)
 

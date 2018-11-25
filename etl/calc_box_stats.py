@@ -13,7 +13,7 @@ from config import data_directory
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
 # Create Schema
-string_fields = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'opp_Team']
+string_fields = ['Gender', 'Year', 'Division','Date', 'Time', 'Team', 'opp_Team']
 schema = types.StructType(
     [types.StructField(field_name, types.StringType(), True) if field_name in string_fields else types.StructField(field_name, types.IntegerType(), True) \
     for field_name in box_score_columns]
@@ -29,7 +29,7 @@ def main(input, output):
         .withColumn('GP', functions.lit(1).cast(types.IntegerType())) \
         .withColumn('Win', functions.when(df['PTS'] > df['opp_PTS'], 1).otherwise(0)) \
         .withColumn('Loss', functions.when(df['PTS'] < df['opp_PTS'], 1).otherwise(0)) \
-        .groupby(['Gender', 'Year', 'Divison', 'Team']).sum()
+        .groupby(['Gender', 'Year', 'Division', 'Team']).sum()
 
     # Rename grouped columns to make for easier calculations
     df = df.toDF(*renameGroupedColumns(df.columns))
