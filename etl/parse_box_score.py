@@ -2,7 +2,6 @@ import sys, os
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 from pyspark.sql import SparkSession, functions, types, Row
 from pyspark import SparkConf, SparkContext
-from resources import box_score_columns
 app_name = "NCAA Basketball"
 spark = SparkSession.builder.appName(app_name).getOrCreate()
 assert spark.version >= '2.3' # make sure we have Spark 2.3+
@@ -49,7 +48,7 @@ def main(output):
     df = df \
         .withColumn('Gender', df['split'].getItem(4)) \
         .withColumn('Year', df['split'].getItem(5)) \
-        .withColumn('Division', df['split'].getItem(6)) \
+        .withColumn('Divison', df['split'].getItem(6)) \
         .withColumn('File_Team', df['split'].getItem(7)) \
         .na.fill(0)
 
@@ -62,11 +61,14 @@ def main(output):
     teams2 = teams.toDF(*new_cols)
     join_conditions = [teams['File_Team'] == teams2['opp_File_Team'], teams['Time'] == teams2['opp_Time'], \
         teams['Date'] == teams2['opp_Date'], teams['Team'] != teams2['opp_Team']]
-    full_data = teams.join(teams2, join_conditions) \
-        .dropDuplicates(['Date','Time', 'Team', 'opp_Team'])
+    full_data = teams.join(teams2, join_conditions)
 
     # Keep columns we want, write data.
-    full_data.select(box_score_columns).write.csv(output, mode='overwrite', header=True, compression='gzip')
+    final_columns = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'FGM', 'FGA', \
+        '3FG', '3FGA', 'FT', 'FTA', 'PTS', 'ORebs', 'DRebs', 'Tot Reb', 'AST', 'TO', 'STL', \
+        'BLK', 'Fouls',  'opp_Team', 'opp_FGM', 'opp_FGA', 'opp_3FG', 'opp_3FGA', 'opp_FT', 'opp_FTA',\
+        'opp_PTS', 'opp_ORebs', 'opp_DRebs', 'opp_Tot Reb', 'opp_AST', 'opp_TO', 'opp_STL', 'opp_BLK', 'opp_Fouls', ]
+    full_data.select(final_columns).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     output = sys.argv[1]

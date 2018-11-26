@@ -17,6 +17,7 @@ def main():
         .withColumn('split', functions.split('filename', '/'))
 
     df = df \
+        .withColumnRenamed('_c0', 'Team1') \
         .withColumn('Gender', df['split'].getItem(4)) \
         .withColumn('Year', df['split'].getItem(5)) \
         .withColumn('Divison', df['split'].getItem(6)) \
@@ -24,10 +25,14 @@ def main():
         .withColumn('Date', df['split'].getItem(8)) \
         .withColumn('Team2', functions.regexp_replace('Team', '%20', ' ')) \
         .drop(df['split']) \
-        .drop(df['filename'])
+        .drop(df['filename']) \
+
+    df2 = df
+    join_conditions = [df['File_Team'] == teams2['opp_File_Team'], teams['Time'] == teams2['opp_Time'], \
+        teams['Date'] == teams2['opp_Date'], teams['Team'] != teams2['opp_Team']]
     # #df.where(functions.isnull('Total')).show()
     # df.where(df['Date'] == '02.08.2016').show()
-    df.show()
+    df.select(df['_c0']).show()
 
 if __name__ == '__main__':
     sc = spark.sparkContext
