@@ -12,10 +12,12 @@ DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
 # Main
 def main(output):
+    # Read in data and grab filename
     df = spark.read.csv(os.path.join(DATA_DIR, 'Men/*/*/*/*/Score.csv'), header='true') \
         .withColumn('filename', functions.input_file_name()) \
         .withColumn('split', functions.split('filename', '/'))
 
+    # Parse filename, create additional columns
     df = df \
         .withColumnRenamed('_c0', 'Team1') \
         .withColumn('Gender', df['split'].getItem(4)) \
@@ -29,20 +31,22 @@ def main(output):
         .drop(df['filename']) \
         .drop('Team2')
 
-    #df = df.select(['Team1', 'Gender', 'Year', 'Date', 'File_Team', 'id', 'Division'])
+    # Join df to itself to get both teams in the same row
     df2 = df.toDF(*[c + "_2" for c in df.columns])
     join_conditions = [df['File_Team'] == df2['File_Team_2'], df['Date'] == df2['Date_2'], df['Division'] == df2['Division_2'], \
         df['Year'] == df2['Year_2'], df['Team1'] != df2['Team1_2'], df['Gender'] == df2['Gender_2']]
+    home_and_away = df.join(df2, join_conditions)
 
-    j = df.join(df2, join_conditions)
-    j = j.withColumn('Home_Team', functions.when(j['id'] > j['id_2'], j['Team1']).otherwise(j['Team1_2']))
-    j = j.withColumn('Away_Team', functions.when(j['id'] < j['id_2'], j['Team1']).otherwise(j['Team1_2']))
-    j = j.withColumnRenamed('Team1', 'Team') \
+    # Determine which team is home/away
+    home_and_away = home_and_away \
+        .withColumn('Home_Team', functions.when(home_and_away['id'] > home_and_away['id_2'], home_and_away['Team1']).otherwise(home_and_away['Team1_2']))
+    home_and_away = home_and_away \
+        .withColumn('Away_Team', functions.when(home_and_away['id'] < home_and_away['id_2'], home_and_away['Team1']).otherwise(home_and_away['Team1_2']))
+
+    # Write data
+    home_and_away = home_and_away.withColumnRenamed('Team1', 'Team') \
         .select(['Gender', 'Division', 'Year', 'Date', 'Team', 'Home_Team', 'Away_Team' ] )
-    #     teams['Date'] == teams2['opp_Date'], teams['Team'] != teams2['opp_Team']]
-    # #df.where(functions.isnull('Total')).show()
-    # df.where(df['Date'] == '02.08.2016').show()
-    j.coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
+    home_and_away.coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     sc = spark.sparkContext
