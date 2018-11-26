@@ -5,7 +5,7 @@ University of Alabama,D1,Crimson Tide,Tuscaloosa,Alabama,Southeastern Conference
 Alabama Agricultural and Mechanical University,D1,Bulldogs and Lady Bulldogs,Huntsville,Alabama,Southwestern Athletic Conference
 University of Alabama at Birmingham,D1,Blazers,Birmingham,Alabama,Conference USA
 Alabama State University,D1,Hornets and Lady Hornets,Montgomery,Alabama,Southwestern Athletic Conference
-"University at Albany, SUNY",D1,Great Danes,Albany,New York,America East Conference
+University at Albany, SUNY,D1,Great Danes,Albany,New York,America East Conference
 Alcorn State University,D1,Braves and Lady Braves,Lorman,Mississippi,Southwestern Athletic Conference
 American University,D1,Eagles,Washington,District of Columbia,Patriot League
 Appalachian State University,D1,Mountaineers,Boone,North Carolina,Sun Belt Conference
@@ -33,19 +33,19 @@ Bryant University,D1,Bulldogs,Smithfield,Rhode Island,Northeast Conference
 Bucknell University,D1,Bison,Lewisburg,Pennsylvania,Patriot League
 University at Buffalo,D1,Bulls,Buffalo,New York,Mid-American Conference
 Butler University,D1,Bulldogs,Indianapolis,Indiana,Big East Conference
-"University of California, Berkeley",D1,Golden Bears,Berkeley,California,Pac-12 Conference
-"University of California, Davis",D1,Aggies,Davis,California,Big West Conference
-"University of California, Irvine",D1,Anteaters,Irvine,California,Big West Conference
-"University of California, Los Angeles",D1,Bruins,Los Angeles,California,Pac-12 Conference
+University of California, Berkeley,D1,Golden Bears,Berkeley,California,Pac-12 Conference
+University of California, Davis,D1,Aggies,Davis,California,Big West Conference
+University of California, Irvine,D1,Anteaters,Irvine,California,Big West Conference
+University of California, Los Angeles,D1,Bruins,Los Angeles,California,Pac-12 Conference
 California Polytechnic State University,D1,Mustangs,San Luis Obispo,California,Big West Conference
-"University of California, Riverside",D1,Highlanders,Riverside,California,Big West Conference
-"University of California, Santa Barbara",D1,Gauchos,Santa Barbara,California,Big West Conference
-"California State University, Bakersfield",D1,Roadrunners,Bakersfield,California,Western Athletic Conference
-"California State University, Fresno",D1,Bulldogs,Fresno,California,Mountain West Conference
-"California State University, Fullerton",D1,Titans,Fullerton,California,Big West Conference
-"California State University, Long Beach",D1,49ers,Long Beach,California,Big West Conference
-"California State University, Northridge",D1,Matadors,Northridge,California,Big West Conference
-"California State University, Sacramento",D1,Hornets,Sacramento,California,Big Sky Conference
+University of California, Riverside,D1,Highlanders,Riverside,California,Big West Conference
+University of California, Santa Barbara,D1,Gauchos,Santa Barbara,California,Big West Conference
+California State University, Bakersfield,D1,Roadrunners,Bakersfield,California,Western Athletic Conference
+California State University, Fresno,D1,Bulldogs,Fresno,California,Mountain West Conference
+California State University, Fullerton,D1,Titans,Fullerton,California,Big West Conference
+California State University, Long Beach,D1,49ers,Long Beach,California,Big West Conference
+California State University, Northridge,D1,Matadors,Northridge,California,Big West Conference
+California State University, Sacramento,D1,Hornets,Sacramento,California,Big Sky Conference
 Campbell University,D1,Fighting Camels and Lady Camels,Buies Creek,North Carolina,Big South Conference
 Canisius College,D1,Golden Griffins,Buffalo,New York,Metro Atlantic Athletic Conference
 University of Central Arkansas,D1,Bears and Sugar Bears,Conway,Arkansas,Southland Conference
@@ -161,8 +161,8 @@ Manhattan College,D1,Jaspers and Lady Jaspers,Riverdale,New York,Metro Atlantic 
 Marist College,D1,Red Foxes,Poughkeepsie,New York,Metro Atlantic Athletic Conference
 Marquette University,D1,Golden Eagles,Milwaukee,Wisconsin,Big East Conference
 Marshall University,D1,Thundering Herd,Huntington,West Virginia,Conference USA
-"University of Maryland, Baltimore County",D1,Retrievers,Catonsville,Maryland,America East Conference
-"University of Maryland, College Park",D1,Terrapins,College Park,Maryland,Big Ten Conference
+University of Maryland, Baltimore County,D1,Retrievers,Catonsville,Maryland,America East Conference
+University of Maryland, College Park,D1,Terrapins,College Park,Maryland,Big Ten Conference
 University of Maryland Eastern Shore,D1,Hawks and Lady Hawks,Princess Anne,Maryland,Mid-Eastern Athletic Conference
 University of Massachusetts Amherst,D1,Minutemen and Minutewomen,Amherst,Massachusetts,Atlantic 10 Conference
 University of Massachusetts Lowell,D1,River Hawks,Lowell,Massachusetts,America East Conference
@@ -190,8 +190,8 @@ Mount St. Mary's University,D1,Mountaineers,Emmitsburg,Maryland,Northeast Confer
 Murray State University,D1,Racers,Murray,Kentucky,Ohio Valley Conference
 University of Nebraska-Lincoln,D1,Cornhuskers,Lincoln,Nebraska,Big Ten Conference
 University of Nebraska Omaha,D1,Mavericks,Omaha,Nebraska,The Summit League
-"University of Nevada, Las Vegas",D1,Rebels,Paradise,Nevada,Mountain West Conference
-"University of Nevada, Reno",D1,Wolf Pack,Reno,Nevada,Mountain West Conference
+University of Nevada, Las Vegas,D1,Rebels,Paradise,Nevada,Mountain West Conference
+University of Nevada, Reno,D1,Wolf Pack,Reno,Nevada,Mountain West Conference
 University of New Hampshire,D1,Wildcats,Durham,New Hampshire,America East Conference
 New Jersey Institute of Technology,D1,Highlanders,Newark,New Jersey,Atlantic Sun Conference
 University of New Mexico,D1,Lobos,Albuquerque,New Mexico,Mountain West Conference
@@ -362,7 +362,7 @@ American International College,D2,Yellow Jackets,Springfield,Massachusetts,North
 Anderson University,D2,Trojans,Anderson,South Carolina,South Atlantic Conference
 Angelo State University,D2,Rams & Rambelles,San Angelo,Texas,Lone Star Conference
 Arkansas Tech University,D2,Wonder Boys & Golden Suns,Russellville,Arkansas,Great American Conference
-University of Arkansasâ Fort Smith,D2,Lions,Fort Smith,Arkansas,Heartland Conference
+University of Arkansasï¿½ Fort Smith,D2,Lions,Fort Smith,Arkansas,Heartland Conference
 University of Arkansas at Monticello,D2,Boll Weevils & Cotton Blossoms,Monticello,Arkansas,Great American Conference
 Ashland University,D2,Eagles,Ashland,Ohio,Great Lakes Intercollegiate Athletic Conference
 Assumption College,D2,Greyhounds,Worcester,Massachusetts,Northeast-10 Conference
@@ -384,16 +384,16 @@ Bowie State University,D2,Bulldogs,Bowie,Maryland,Central Intercollegiate Athlet
 University of Bridgeport,D2,Purple Knights,Bridgeport,Connecticut,East Coast Conference
 Caldwell University,D2,Cougars,Caldwell,New Jersey,Central Atlantic Collegiate Conference
 California University of Pennsylvania,D2,Vulcans,California,Pennsylvania,Pennsylvania State Athletic Conference
-"California State Polytechnic University, Pomona",D2,Broncos,Pomona,California,California Collegiate Athletic Association
-"California State University, Chico",D2,Wildcats,Chico,California,California Collegiate Athletic Association
-"California State University, Dominguez Hills",D2,Toros,Carson,California,California Collegiate Athletic Association
-"California State University, East Bay",D2,Pioneers,Hayward,California,California Collegiate Athletic Association
-"California State University, Los Angeles",D2,Golden Eagles,Los Angeles,California,California Collegiate Athletic Association
-"California State University, Monterey Bay",D2,Otters,Seaside,California,California Collegiate Athletic Association
-"California State University, San Bernardino",D2,Coyotes,San Bernardino,California,California Collegiate Athletic Association
+California State Polytechnic University, Pomona,D2,Broncos,Pomona,California,California Collegiate Athletic Association
+California State University, Chico,D2,Wildcats,Chico,California,California Collegiate Athletic Association
+California State University, Dominguez Hills,D2,Toros,Carson,California,California Collegiate Athletic Association
+California State University, East Bay,D2,Pioneers,Hayward,California,California Collegiate Athletic Association
+California State University, Los Angeles,D2,Golden Eagles,Los Angeles,California,California Collegiate Athletic Association
+California State University, Monterey Bay,D2,Otters,Seaside,California,California Collegiate Athletic Association
+California State University, San Bernardino,D2,Coyotes,San Bernardino,California,California Collegiate Athletic Association
 California State University San Marcos,D2,Cougars,San Marcos,California,California Collegiate Athletic Association
-"California State University, Stanislaus",D2,Warriors,Turlock,California,California Collegiate Athletic Association
-"University of California, San Diego",D2,Tritons,La Jolla,California,California Collegiate Athletic Association
+California State University, Stanislaus,D2,Warriors,Turlock,California,California Collegiate Athletic Association
+University of California, San Diego,D2,Tritons,La Jolla,California,California Collegiate Athletic Association
 Cameron University,D2,Aggies,Lawton,Oklahoma,Lone Star Conference
 Carson-Newman University,D2,Eagles,Jefferson City,Tennessee,South Atlantic Conference
 Catawba College,D2,Indians,Salisbury,North Carolina,South Atlantic Conference
@@ -514,7 +514,7 @@ Michigan Technological University,D2,Huskies,Houghton,Michigan,Great Lakes Inter
 Midwestern State University,D2,Mustangs,Wichita Falls,Texas,Lone Star Conference
 Miles College,D2,Golden Bears,Fairfield,Alabama,Southern Intercollegiate Athletic Conference
 Millersville University of Pennsylvania,D2,Marauders,Millersville,Pennsylvania,Pennsylvania State Athletic Conference
-"Minnesota State University, Mankato",D2,Mavericks,Mankato,Minnesota,Northern Sun Intercollegiate Conference
+Minnesota State University, Mankato,D2,Mavericks,Mankato,Minnesota,Northern Sun Intercollegiate Conference
 Minnesota State University Moorhead,D2,Dragons,Moorhead,Minnesota,Northern Sun Intercollegiate Conference
 University of Minnesota Crookston,D2,Golden Eagles,Crookston,Minnesota,Northern Sun Intercollegiate Conference
 University of Minnesota Duluth,D2,Bulldogs,Duluth,Minnesota,Northern Sun Intercollegiate Conference
@@ -704,7 +704,7 @@ Cabrini University,D3,Cavaliers,Radnor,Pennsylvania,Atlantic East Conference
 Cairn University,D3,Highlanders,Langhorne,Pennsylvania,Colonial States Athletic Conference
 California Institute of Technology,D3,Beavers,Pasadena,California,Southern California Intercollegiate Athletic Conference
 California Lutheran University,D3,Kingsmen,Thousand Oaks,California,Southern California Intercollegiate Athletic Conference
-"University of California, Santa Cruz",D3,Banana Slugs,Santa Cruz,California,Independent
+University of California, Santa Cruz,D3,Banana Slugs,Santa Cruz,California,Independent
 Calvin College,D3,Knights,Grand Rapids,Michigan,Michigan Intercollegiate Athletic Association
 Capital University,D3,Crusaders,Columbus,Ohio,Ohio Athletic Conference
 Carleton College,D3,Knights,Northfield,Minnesota,Minnesota Intercollegiate Athletic Conference
@@ -771,7 +771,7 @@ Emory University,D3,Eagles,Atlanta,Georgia,University Athletic Association
 Emory and Henry College,D3,Wasps,Emory,Virginia,Old Dominion Athletic Conference
 Endicott College,D3,Gulls,Beverly,Massachusetts,Commonwealth Coast Conference
 Eureka College,D3,Red Devils,Eureka,Illinois,St. Louis Intercollegiate Athletic Conference
-"Fairleigh Dickinson University, Florham",D3,Devils,Madison/Florham Park,New Jersey,MAC Freedom Conference
+Fairleigh Dickinson University, Florham,D3,Devils,Madison/Florham Park,New Jersey,MAC Freedom Conference
 Farmingdale State College,D3,Rams,Farmingdale,New York,Skyline Conference
 Ferrum College,D3,Panthers,Ferrum,Virginia,Old Dominion Athletic Conference
 Finlandia University,D3,Lions,Hancock,Michigan,American Collegiate Athletic Association
@@ -952,11 +952,11 @@ University of the Ozarks,D3,Eagles,Clarksville,Arkansas,American Southwest Confe
 Pacific Lutheran University,D3,Lutes,Tacoma,Washington,Northwest Conference
 Pacific University,D3,Boxers,Forest Grove,Oregon,Northwest Conference
 Pennsylvania College of Technology,D3,Wildcats,Williamsport,Pennsylvania,North Eastern Athletic Conference
-"Pennsylvania State University, Abington",D3,Nittany Lions,Abington,Pennsylvania,North Eastern Athletic Conference
-"Pennsylvania State University, Altoona",D3,Lions,Altoona,Pennsylvania,Allegheny Mountain Collegiate Conference
-"Pennsylvania State University, Berks College",D3,Nittany Lions,Reading,Pennsylvania,North Eastern Athletic Conference
-"Pennsylvania State University, Erie",D3,Lions,Erie,Pennsylvania,Allegheny Mountain Collegiate Conference
-"Pennsylvania State University, Harrisburg",D3,Lions,Harrisburg,Pennsylvania,Capital Athletic Conference(North Eastern Athletic Conference in 2019)
+Pennsylvania State University, Abington,D3,Nittany Lions,Abington,Pennsylvania,North Eastern Athletic Conference
+Pennsylvania State University, Altoona,D3,Lions,Altoona,Pennsylvania,Allegheny Mountain Collegiate Conference
+Pennsylvania State University, Berks College,D3,Nittany Lions,Reading,Pennsylvania,North Eastern Athletic Conference
+Pennsylvania State University, Erie,D3,Lions,Erie,Pennsylvania,Allegheny Mountain Collegiate Conference
+Pennsylvania State University, Harrisburg,D3,Lions,Harrisburg,Pennsylvania,Capital Athletic Conference(North Eastern Athletic Conference in 2019)
 Pfeiffer University,D3,Falcons,Misenheimer,North Carolina,USA South Athletic Conference
 Piedmont College,D3,Lions,Demorest,Georgia,USA South Athletic Conference
 Pine Manor College,D3,Gators,Chestnut Hill,Massachusetts,American Collegiate Athletic Association
@@ -1102,5 +1102,5 @@ College of Wooster,D3,Fighting Scots,Wooster,Ohio,North Coast Athletic Conferenc
 Worcester Polytechnic Institute,D3,Engineers,Worcester,Massachusetts,New England Women's and Men's Athletic Conference
 Worcester State University,D3,Lancers,Worcester,Massachusetts,Massachusetts State Collegiate Athletic Conference
 Yeshiva University,D3,Maccabees,New York,New York,Skyline Conference
-"York College, City University of New York",D3,Cardinals,Queens,New York,City University of New York Athletic Conference
+York College, City University of New York,D3,Cardinals,Queens,New York,City University of New York Athletic Conference
 York College of Pennsylvania,D3,Spartans,York,Pennsylvania,Capital Athletic Conference
