@@ -15,7 +15,7 @@ def main():
             except OSError, e:
                 print("File {} already exists".format(dirname))
             print('Found directory: %s' % dirname)
-            time.sleep(1)
+            time.sleep(3)
 
 
 if __name__ == '__main__':

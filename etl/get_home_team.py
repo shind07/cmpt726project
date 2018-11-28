@@ -24,12 +24,14 @@ def main(output):
         .withColumn('Year', df['split'].getItem(5)) \
         .withColumn('Division', df['split'].getItem(6)) \
         .withColumn('Team2', df['split'].getItem(7)) \
-        .withColumn('Date', df['split'].getItem(8)) \
+        .withColumn('Date2', df['split'].getItem(8)) \
         .withColumn('File_Team', functions.regexp_replace('Team2', '%20', ' ')) \
         .withColumn('id', functions.monotonically_increasing_id()) \
+        .withColumn('Date',functions.regexp_replace('Date2', '\.', '/'))  \
         .drop(df['split']) \
         .drop(df['filename']) \
-        .drop('Team2')
+        .drop('Team2') \
+        .drop('Date2')
 
     # Join df to itself to get both teams in the same row
     df2 = df.toDF(*[c + "_2" for c in df.columns])
