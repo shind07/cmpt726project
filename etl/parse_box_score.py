@@ -48,9 +48,11 @@ def main(output):
     df = df \
         .withColumn('Gender', df['split'].getItem(4)) \
         .withColumn('Year', df['split'].getItem(5)) \
-        .withColumn('Divison', df['split'].getItem(6)) \
-        .withColumn('File_Team', df['split'].getItem(7)) \
+        .withColumn('Division', df['split'].getItem(6)) \
+        .withColumn('File_Team2', df['split'].getItem(7)) \
         .na.fill(0)
+
+    df = df.withColumn('File_Team', functions.regexp_replace('File_Team2', '%20', ' ')) \
 
     # Only keep the Team data - ignore player data
     teams = df.where(df['Player'] == 'Totals')
@@ -64,7 +66,7 @@ def main(output):
     full_data = teams.join(teams2, join_conditions)
 
     # Keep columns we want, write data.
-    final_columns = ['Gender', 'Year', 'Divison','Date', 'Time', 'Team', 'FGM', 'FGA', \
+    final_columns = ['Gender', 'Year', 'Division','Date', 'Time', 'File_Team', 'Team', 'FGM', 'FGA', \
         '3FG', '3FGA', 'FT', 'FTA', 'PTS', 'ORebs', 'DRebs', 'Tot Reb', 'AST', 'TO', 'STL', \
         'BLK', 'Fouls',  'opp_Team', 'opp_FGM', 'opp_FGA', 'opp_3FG', 'opp_3FGA', 'opp_FT', 'opp_FTA',\
         'opp_PTS', 'opp_ORebs', 'opp_DRebs', 'opp_Tot Reb', 'opp_AST', 'opp_TO', 'opp_STL', 'opp_BLK', 'opp_Fouls', ]
