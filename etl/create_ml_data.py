@@ -32,11 +32,15 @@ def main(output):
         ((df['Win'] == 1) & (df['Is_Home_Team'] == 1)) | ((df['Win'] == 0) & (df['Is_Home_Team'] == 0))
     ]
 
-    df = df.withColumn('Home_Team_Win', functions.when(*home_win_conds, 1).otherwise(0))
+    df = df \
+        .withColumn('Home_Team_Win', functions.when(*home_win_conds, 1).otherwise(0)) \
+        .withColumnRenamed('Home_Team_home', 'Home_Team') \
+        .withColumnRenamed('Away_Team_home', 'Away_Team') \
 
     #df_forML = df.select('Date', 'Year', 'Gender', 'Division', 'Team', 'FileTeam', 'Seconds_Left', 'Away_score', 'Home_Score', 'Action')
     #df.show()
-    df.write.csv(output, mode='overwrite', header=True, compression='gzip')
+    final_columns = ['Year', 'Gender', 'Division', 'Date', 'File_Team', 'Team', 'opp_Team', 'Home_Team', 'Away_Team', 'PTS', 'opp_PTS', 'Home_Team_Win']
+    df.select(final_columns).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     output = sys.argv[1]
