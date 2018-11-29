@@ -47,8 +47,8 @@ def main(output):
 
     # Write data
     home_and_away = home_and_away.withColumnRenamed('Team1', 'Team') \
-        .select(['Gender', 'Division', 'Year', 'Date', 'Team', 'Home_Team', 'Away_Team' ] )
-    home_and_away.coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
+        .select(['Gender', 'Division', 'Year', 'Date', 'File_Team', 'Home_Team', 'Away_Team' ] )
+    home_and_away.drop_duplicates().coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     sc = spark.sparkContext

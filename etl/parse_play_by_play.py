@@ -72,10 +72,13 @@ def main(output):
         .drop(df['Score_split']) \
         .drop(df['LineupTime'])
     df = df \
-        .withColumn('Home_Margin', df['Home_Score'] - df['Away_Score'])
+        .withColumn('Home_Margin', df['Home_Score'] - df['Away_Score']).cache()
 
-    df.select('Date', 'Year', 'Gender', 'Division', 'Team', 'File_Team', 'Seconds_Left', 'Home_Score', 'Away_score', 'Home_Margin', 'Action') \
-        .write.csv(output, mode='overwrite', header=True, compression='gzip')
+    df = df.select('Date', 'Year', 'Gender', 'Division', 'Team', 'File_Team', 'Seconds_Left', 'Home_Score', 'Away_score', 'Home_Margin', 'Action')
+
+
+    df.write.csv(output, mode='overwrite', header=True, compression='gzip')
+
 
 if __name__ == '__main__':
     output = sys.argv[1]

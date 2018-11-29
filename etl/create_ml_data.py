@@ -15,31 +15,40 @@ def main(output):
     pbp = spark.read.csv('output/pbp', header='true')
     box = spark.read.csv('output/box', header='true')
     home_teams = spark.read.csv('output/home_teams', header='true')
-    home_teams = home_teams.toDF(*[col + '_home' for col in home_teams.columns])
-    box_home_conditions = [
-        box['File_Team'] == home_teams['Team_home'],
-        box['Date'] == home_teams['Date_home'],
-        box['Gender'] == home_teams['Gender_home'],
-        box['Division'] == home_teams['Division_home'],
-        box['Year'] == home_teams['Year_home'],
-    ]
-    df = box.join(home_teams, box_home_conditions)
+    box_home_join_columns = ['File_Team','Date','Gender', 'Division', 'Year']
+    df = box.join(home_teams, box_home_join_columns)
 
+    #home_teams.where((home_teams['File_Team'] == 'Texas') & (home_teams['Date'] == '12/29/2015')).show()
+    #box.where((box['File_Team'] == 'Texas') & (box['Date'] == '12/29/2015')).show()
+    #df.where((df['File_Team'] == 'Texas') & (df['Date'] == '12/29/2015')).show()
     df = df \
         .withColumn('Win', functions.when(df['PTS'] > df['opp_PTS'], 1).otherwise(0))  \
-        .withColumn('Is_Home_Team', functions.when(df['Team'] == df['Team_home'], 1).otherwise(0))
+        .withColumn('Is_Home_Team', functions.when(df['Team'] == df['Home_Team'], 1).otherwise(0))
+
     home_win_conds = [
         ((df['Win'] == 1) & (df['Is_Home_Team'] == 1)) | ((df['Win'] == 0) & (df['Is_Home_Team'] == 0))
     ]
 
-    df = df \
-        .withColumn('Home_Team_Win', functions.when(*home_win_conds, 1).otherwise(0)) \
-        .withColumnRenamed('Home_Team_home', 'Home_Team') \
-        .withColumnRenamed('Away_Team_home', 'Away_Team') \
+    df = df .withColumn('Home_Team_Win', functions.when(*home_win_conds, 1).otherwise(0))
+    #df = df.select(['File_Team','Date','Gender', 'Division', 'Year','Home_Team', 'Away_Team', 'Is_Home_Team', 'Home_Team_Win' ])
+    #df.where((df['File_Team'] == 'Texas') & (df['Date'] == '12/29/2015')).show()
 
-    #df_forML = df.select('Date', 'Year', 'Gender', 'Division', 'Team', 'FileTeam', 'Seconds_Left', 'Away_score', 'Home_Score', 'Action')
-    #df.show()
-    final_columns = ['Year', 'Gender', 'Division', 'Date', 'File_Team', 'Team', 'opp_Team', 'Home_Team', 'Away_Team', 'PTS', 'opp_PTS', 'Home_Team_Win']
+    final_columns = ['Year', 'Gender', 'Division', 'Date', 'File_Team', 'Team', 'opp_Team', 'Home_Team', 'Away_Team', 'PTS', 'opp_PTS', 'Home_Team_Win', 'Is_Home_Team']
+    df = df.select(final_columns)#.show()
+
+    # print(pbp.columns)
+    # print(df.columns)
+    pbp_join_conds = [
+        df['Gender'] == pbp['Gender'],
+        df['Year'] == pbp['Year'],
+        df['Division'] == pbp['Division'],
+        df['File_Team'] == pbp['File_Team'],
+    ]
+
+    pbp_join_cols = ['Gender', 'Year', 'Division', 'File_Team', 'Date']
+
+    df = pbp.join(df.drop('Team'), pbp_join_cols)#.show()
+    final_columns = ['Year', 'Gender', 'Division', 'Date',  'Home_Team', 'Away_Team', 'Seconds_Left','Home_Score', 'Away_Score', 'Home_Margin', 'Home_Team_Win']
     df.select(final_columns).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
