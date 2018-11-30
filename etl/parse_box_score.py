@@ -72,7 +72,7 @@ def main(output):
         'opp_PTS', 'opp_ORebs', 'opp_DRebs', 'opp_Tot Reb', 'opp_AST', 'opp_TO', 'opp_STL', 'opp_BLK', 'opp_Fouls', ]
     full_data.select(final_columns) \
         .where((full_data['PTS'] != 0) & (full_data['opp_PTS'] != 0)) \
-    .write.csv(output, mode='overwrite', header=True, compression='gzip')
+        .write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     output = sys.argv[1]

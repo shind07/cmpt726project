@@ -15,41 +15,52 @@ def main(output):
     pbp = spark.read.csv('output/pbp', header='true')
     box = spark.read.csv('output/box', header='true')
     home_teams = spark.read.csv('output/home_teams', header='true')
+
+    # Join box scores with home teams
     box_home_join_columns = ['File_Team','Date','Gender', 'Division', 'Year']
     df = box.join(home_teams, box_home_join_columns)
+    #df.where((df['Home_Team'] =='LeTourneau') & (df['Away_Team'] == 'Ozarks (AR)')).show()
 
-    #home_teams.where((home_teams['File_Team'] == 'Texas') & (home_teams['Date'] == '12/29/2015')).show()
-    #box.where((box['File_Team'] == 'Texas') & (box['Date'] == '12/29/2015')).show()
-    #df.where((df['File_Team'] == 'Texas') & (df['Date'] == '12/29/2015')).show()
+    # Determine which team won the game - the label for the ML data
     df = df \
-        .withColumn('Win', functions.when(df['PTS'] > df['opp_PTS'], 1).otherwise(0))  \
+        .withColumn('Win', functions.when(df['PTS'].cast(types.IntegerType()) > df['opp_PTS'].cast(types.IntegerType()), 1).otherwise(0))  \
         .withColumn('Is_Home_Team', functions.when(df['Team'] == df['Home_Team'], 1).otherwise(0))
-
-    home_win_conds = [
-        ((df['Win'] == 1) & (df['Is_Home_Team'] == 1)) | ((df['Win'] == 0) & (df['Is_Home_Team'] == 0))
-    ]
-
+    home_win_conds = [((df['Win'] == 1) & (df['Is_Home_Team'] == 1)) | ((df['Win'] == 0) & (df['Is_Home_Team'] == 0))]
     df = df .withColumn('Home_Team_Win', functions.when(*home_win_conds, 1).otherwise(0))
-    #df = df.select(['File_Team','Date','Gender', 'Division', 'Year','Home_Team', 'Away_Team', 'Is_Home_Team', 'Home_Team_Win' ])
-    #df.where((df['File_Team'] == 'Texas') & (df['Date'] == '12/29/2015')).show()
+    #df.where((df['Home_Team'] =='LeTourneau') & (df['Away_Team'] == 'Ozarks (AR)')).write.csv('output/debug', mode='overwrite', header=True)
 
-    final_columns = ['Year', 'Gender', 'Division', 'Date', 'File_Team', 'Team', 'opp_Team', 'Home_Team', 'Away_Team', 'PTS', 'opp_PTS', 'Home_Team_Win', 'Is_Home_Team']
-    df = df.select(final_columns)#.show()
+    # Join DF with home teams and winning teams to PBP data
+    pbp_join_cols = ['Gender', 'Year', 'Division', 'File_Team', 'Date']
+    df = pbp.join(df.drop('Team'), pbp_join_cols)
 
-    # print(pbp.columns)
-    # print(df.columns)
-    pbp_join_conds = [
-        df['Gender'] == pbp['Gender'],
-        df['Year'] == pbp['Year'],
-        df['Division'] == pbp['Division'],
-        df['File_Team'] == pbp['File_Team'],
+    # Write out data
+    final_columns = ['Year', 'Gender', 'Division', 'Date',  'Home_Team', 'Away_Team', 'Seconds_Left','Home_Score', 'Away_Score', 'Home_Margin', 'Home_Team_Win']
+    df = df.select(final_columns)#.drop_duplicates()
+    #df.write.csv(output, mode='overwrite', header=True, compression='gzip')
+
+    # Get more advanced stats for each team
+    box_stats_columns = ['Year', 'Gender', 'Division', 'Team', 'ORtg', 'DRtg', 'NetRtg', 'OREB%', 'DREB%', 'FT%', 'FTr', '3PAr', 'STL%', 'BLK%']
+    box_stats = spark.read.csv('output/box_stats', header='true').select(box_stats_columns)
+    box_stats_home = box_stats.toDF(*[col + '_Home' for col in box_stats.columns])
+    box_stats_away = box_stats.toDF(*[col + '_Away' for col in box_stats.columns])
+
+    home_conds = [
+        df['Home_Team'] == box_stats_home['Team_Home'],
+        df['Gender'] == box_stats_home['Gender_Home'],
+        df['Division'] == box_stats_home['Division_Home'],
+        df['Year'] == box_stats_home['Year_Home']
     ]
 
-    pbp_join_cols = ['Gender', 'Year', 'Division', 'File_Team', 'Date']
+    away_conds = [
+        df['Away_Team'] == box_stats_away['Team_Away'],
+        df['Gender'] == box_stats_away['Gender_Away'],
+        df['Division'] == box_stats_away['Division_Away'],
+        df['Year'] == box_stats_away['Year_Away']
+    ]
 
-    df = pbp.join(df.drop('Team'), pbp_join_cols)#.show()
-    final_columns = ['Year', 'Gender', 'Division', 'Date',  'Home_Team', 'Away_Team', 'Seconds_Left','Home_Score', 'Away_Score', 'Home_Margin', 'Home_Team_Win']
-    df.select(final_columns).write.csv(output, mode='overwrite', header=True, compression='gzip')
+    df = df.join(box_stats_home, home_conds).drop(*['Year_Home','Gender_Home','Division_Home','Team_Home'])
+    df = df.join(box_stats_away, away_conds).drop(*['Year_Away','Gender_Away','Division_Away','Team_Away'])#.show()
+    df.write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     output = sys.argv[1]

@@ -13,7 +13,7 @@ from config import data_directory
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
 # Create Schema
-string_fields = ['Gender', 'Year', 'Division','Date', 'Time', 'Team', 'opp_Team']
+string_fields = ['Gender', 'Year', 'Division','Date', 'Time', 'File_Team', 'Team', 'opp_Team']
 schema = types.StructType(
     [types.StructField(field_name, types.StringType(), True) if field_name in string_fields else types.StructField(field_name, types.IntegerType(), True) \
     for field_name in box_score_columns]
@@ -23,7 +23,6 @@ schema = types.StructType(
 def main(input, output):
     # Read in CSV data and hold onto filename
     df = spark.read.csv(input, schema=schema, header='true')
-
     # Sum all data by year for each team
     df = df \
         .withColumn('GP', functions.lit(1).cast(types.IntegerType())) \
@@ -36,7 +35,8 @@ def main(input, output):
 
     # calculate new columns
     df = df \
-        .withColumn('OREB%', functions.round((df['ORebs'] / (df['ORebs'] + df['opp_DRebs'])), 2)) \
+        .withColumn('FT%', df['FT'] / df['FTA']) \
+        .withColumn('OREB%', (df['ORebs'] / (df['ORebs'] + df['opp_DRebs']))) \
         .withColumn('DREB%', functions.round((df['DRebs'] / (df['DRebs'] + df['opp_ORebs'])), 2)) \
         .withColumn('POSS', df['FGA'] + df['TO'] + 0.475*df['FTA'] - df['ORebs']) \
         .withColumn('opp_POSS', df['opp_FGA'] + df['opp_TO'] + 0.475*df['opp_FTA'] - df['opp_ORebs']) \
