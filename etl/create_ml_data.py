@@ -8,12 +8,12 @@ assert spark.version >= '2.3' # make sure we have Spark 2.3+
 spark.sparkContext.setLogLevel('WARN')
 
 from config import pbp_directory
-
+from resources import play_by_play_schema_parsed, box_score_schema_parsed
 # Main
 def main(output):
     # Read in CSV data and hold onto filename
-    pbp = spark.read.csv('output/pbp', header='true')
-    box = spark.read.csv('output/box', header='true')
+    pbp = spark.read.csv('output/pbp', header='true')#, schema=play_by_play_schema_parsed)
+    box = spark.read.csv('output/box', header='true', schema=box_score_schema_parsed)
     home_teams = spark.read.csv('output/home_teams', header='true')
 
     # Join box scores with home teams
@@ -34,7 +34,7 @@ def main(output):
     df = pbp.join(df.drop('Team'), pbp_join_cols)
 
     # Write out data
-    final_columns = ['Year', 'Gender', 'Division', 'Date',  'Home_Team', 'Away_Team', 'Seconds_Left','Home_Score', 'Away_Score', 'Home_Margin', 'Home_Team_Win']
+    final_columns = ['Year', 'Gender', 'Division', 'Date', 'Home_Team', 'Away_Team', 'Seconds_Left', 'Action', 'Status', 'Home_Score', 'Away_Score', 'Home_Margin', 'Home_Team_Win']
     df = df.select(final_columns)#.drop_duplicates()
     #df.write.csv(output, mode='overwrite', header=True, compression='gzip')
 

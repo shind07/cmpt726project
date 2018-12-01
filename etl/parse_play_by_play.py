@@ -9,24 +9,8 @@ spark.sparkContext.setLogLevel('WARN')
 
 # Set directory that contains data
 from config import data_directory
+from resources import play_by_play_schema_raw
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
-
-# Specify schema for our data
-schema = types.StructType([
-    types.StructField('Date', types.StringType(), False),
-    types.StructField('Time', types.StringType(), False),
-    types.StructField('Period', types.StringType(), False),
-    types.StructField('TimeLeft', types.StringType(), False),
-    types.StructField('Score', types.StringType(), False),
-    types.StructField('Team', types.StringType(), False),
-    types.StructField('Player', types.StringType(), False),
-    types.StructField('Status', types.StringType(), False),
-    types.StructField('Action', types.StringType(), False),
-    types.StructField('ShotClock', types.IntegerType(), False),
-    types.StructField('Lineup', types.StringType(), False),
-    types.StructField('LineupTime', types.StringType(), False),
-])
-
 
 @functions.udf(returnType=types.IntegerType())
 def period_mins_left(period):
@@ -48,7 +32,7 @@ def period_mins_left(period):
 # Main
 def main(output):
     # Read in CSV data and hold onto filename
-    df = spark.read.csv(os.path.join(DATA_DIR, '*/*/*/*/*/Play by Play - All (Parsed).csv'), header='true', schema=schema) \
+    df = spark.read.csv(os.path.join(DATA_DIR, '*/*/*/*/*/Play by Play - All (Parsed).csv'), header='true', schema=play_by_play_schema_raw) \
         .withColumn('filename', functions.input_file_name()) \
         .withColumn('split', functions.split('filename', '/')) \
         .withColumn('TimeLeft_split', functions.split('TimeLeft', ':')) \
@@ -59,26 +43,21 @@ def main(output):
         .withColumn('Gender', df['split'].getItem(4)) \
         .withColumn('Year', df['split'].getItem(5)) \
         .withColumn('Division', df['split'].getItem(6)) \
-        .withColumn('File_Team2', df['split'].getItem(7)) \
-        .withColumn('Seconds_Left', df['TimeLeft_split'].getItem(0).cast(types.IntegerType())*60+df['TimeLeft_split'].getItem(1).cast(types.IntegerType())+period_mins_left(df['Period'])*60) \
-        .withColumn('Home_Score', df['Score_split'].getItem(1)) \
+        .withColumn('FileTeam', df['split'].getItem(7)) \
+        .withColumn('Seconds_Left', df['TimeLeft_split'].getItem(0).cast(types.IntegerType())*60 \
+                    +df['TimeLeft_split'].getItem(1).cast(types.IntegerType()) \
+                    +period_mins_left(df['Period'])*60) \
         .withColumn('Away_Score', df['Score_split'].getItem(0)) \
-        .withColumn('File_Team', functions.regexp_replace('File_Team2', '%20', ' ')) \
-        .drop(df['Period']) \
-        .drop(df['TimeLeft']) \
-        .drop(df['filename']) \
-        .drop(df['split']) \
-        .drop(df['TimeLeft_split']) \
-        .drop(df['Score_split']) \
-        .drop(df['LineupTime'])
-    df = df \
-        .withColumn('Home_Margin', df['Home_Score'] - df['Away_Score']).cache()
+        .withColumn('Home_Score', df['Score_split'].getItem(1)) \
+        .withColumn('File_Team', functions.regexp_replace('FileTeam', '%20', ' ')) \
 
-    df = df.select('Date', 'Year', 'Gender', 'Division', 'Team', 'File_Team', 'Seconds_Left', 'Home_Score', 'Away_score', 'Home_Margin', 'Action')
+    df = df.withColumn('Home_Margin', (df['Home_Score'] - df['Away_Score']).cast(types.IntegerType()))
 
+    final_columns = ['Gender','Year','Division', 'Date', 'Time', \
+        'Score','Team', 'Player','Status', 'Action','Shot_Clock','Lineup',\
+        'Seconds_Left','Away_Score','Home_Score', 'Home_Margin', 'File_Team']
 
-    df.write.csv(output, mode='overwrite', header=True, compression='gzip')
-
+    df.select(final_columns).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     output = sys.argv[1]

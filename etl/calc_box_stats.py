@@ -10,6 +10,7 @@ spark.sparkContext.setLogLevel('WARN')
 
 # Set directory that contains data
 from config import data_directory
+from resources import box_score_schema_parsed
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
 # Create Schema
@@ -22,7 +23,7 @@ schema = types.StructType(
 # Main
 def main(input, output):
     # Read in CSV data and hold onto filename
-    df = spark.read.csv(input, schema=schema, header='true')
+    df = spark.read.csv(input, schema=box_score_schema_parsed, header='true')
     # Sum all data by year for each team
     df = df \
         .withColumn('GP', functions.lit(1).cast(types.IntegerType())) \
