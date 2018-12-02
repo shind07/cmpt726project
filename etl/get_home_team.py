@@ -11,9 +11,9 @@ from config import data_directory
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
 # Main
-def main(output):
+def main(input, output):
     # Read in data and grab filename
-    df = spark.read.csv(os.path.join(DATA_DIR, 'Men/*/*/*/*/Score.csv'), header='true') \
+    df = spark.read.csv(os.path.join(input, 'Men/*/*/*/*/Score.csv'), header='true') \
         .withColumn('filename', functions.input_file_name()) \
         .withColumn('split', functions.split('filename', '/'))
 
@@ -51,6 +51,6 @@ def main(output):
     home_and_away.drop_duplicates().coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
-    sc = spark.sparkContext
-    output = sys.argv[1]
-    main(output)
+    input = sys.argv[1]
+    output = sys.argv[2]
+    main(input, output)

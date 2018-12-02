@@ -13,9 +13,9 @@ from resources import box_score_schema_raw
 DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
 # Main
-def main(output):
+def main(input, output):
     # Read in CSV data and hold onto filename
-    df = spark.read.csv(os.path.join(DATA_DIR, '*/*/*/*/*/Box Score - All (Parsed).csv'), header='true', schema=box_score_schema_raw) \
+    df = spark.read.csv(os.path.join(input, '*/*/*/*/*/Box Score - All (Parsed).csv'), header='true', schema=box_score_schema_raw) \
         .withColumn('filename', functions.input_file_name()) \
         .withColumn('split', functions.split('filename', '/'))
 
@@ -51,5 +51,6 @@ def main(output):
         .write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
-    output = sys.argv[1]
-    main(output)
+    input = sys.argv[1]
+    output = sys.argv[2]
+    main(input, output)

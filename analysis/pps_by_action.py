@@ -8,7 +8,6 @@ assert spark.version >= '2.3' # make sure we have Spark 2.3+
 spark.sparkContext.setLogLevel('WARN')
 from resources import play_by_play_schema_parsed
 
-
 @functions.udf(returnType=types.IntegerType())
 def calculate_PPS(type):
     if type == 'Three Point Jumper':

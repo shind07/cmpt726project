@@ -30,9 +30,9 @@ def period_mins_left(period):
         return 0
 
 # Main
-def main(output):
+def main(input, output):
     # Read in CSV data and hold onto filename
-    df = spark.read.csv(os.path.join(DATA_DIR, '*/*/*/*/*/Play by Play - All (Parsed).csv'), header='true', schema=play_by_play_schema_raw) \
+    df = spark.read.csv(os.path.join(input, '*/*/*/*/*/Play by Play - All (Parsed).csv'), header='true', schema=play_by_play_schema_raw) \
         .withColumn('filename', functions.input_file_name()) \
         .withColumn('split', functions.split('filename', '/')) \
         .withColumn('TimeLeft_split', functions.split('TimeLeft', ':')) \
@@ -60,5 +60,6 @@ def main(output):
     df.select(final_columns).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
-    output = sys.argv[1]
-    main(output)
+    input = sys.argv[1]
+    output = sys.argv[2]
+    main(input, output)
