@@ -65,7 +65,10 @@ def main(input, output):
     df.write.csv(output+'_teams', mode='overwrite', header=True)
 
     df = df.groupby('Gender', 'Year', 'Division').avg()
-    df.toDF(*renameGroupedColumns(df.columns)).orderBy('Year', 'Gender', 'Division').write.csv(output+'_all', mode='overwrite', header=True)
+
+    final_columns = ['Gender', 'Year', 'Division', 'PPP', 'opp_PPP', '3PAr', 'eFG%', 'Pace']
+    df.toDF(*renameGroupedColumns(df.columns)).select(final_columns).orderBy('Year', 'Gender', 'Division') \
+        .write.csv(output+'_all', mode='overwrite', header=True)
 
 if __name__ == '__main__':
     input = sys.argv[1]
