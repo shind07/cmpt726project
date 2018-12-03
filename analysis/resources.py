@@ -67,7 +67,7 @@ box_score_schema_raw = types.StructType([
     types.StructField('PTS', types.IntegerType()),
     types.StructField('ORebs', types.IntegerType()),
     types.StructField('DRebs', types.IntegerType()),
-    types.StructField('Tot Reb', types.IntegerType()),
+    types.StructField('Tot_Reb', types.IntegerType()),
     types.StructField('AST', types.IntegerType()),
     types.StructField('TO', types.IntegerType()),
     types.StructField('STL', types.IntegerType()),
@@ -77,9 +77,9 @@ box_score_schema_raw = types.StructType([
 
 # Final columns to be included in parsed box score data
 box_score_columns = ['Gender', 'Year', 'Division','Date', 'Time', 'File_Team', 'Team', 'FGM', 'FGA', \
-        '3FG', '3FGA', 'FT', 'FTA', 'PTS', 'ORebs', 'DRebs', 'Tot Reb', 'AST', 'TO', 'STL', \
+        '3FG', '3FGA', 'FT', 'FTA', 'PTS', 'ORebs', 'DRebs', 'Tot_Reb', 'AST', 'TO', 'STL', \
         'BLK', 'Fouls',  'opp_Team', 'opp_FGM', 'opp_FGA', 'opp_3FG', 'opp_3FGA', 'opp_FT', 'opp_FTA',\
-        'opp_PTS', 'opp_ORebs', 'opp_DRebs', 'opp_Tot Reb', 'opp_AST', 'opp_TO', 'opp_STL', 'opp_BLK', 'opp_Fouls', ]
+        'opp_PTS', 'opp_ORebs', 'opp_DRebs', 'opp_Tot_Reb', 'opp_AST', 'opp_TO', 'opp_STL', 'opp_BLK', 'opp_Fouls', ]
 box_score_columns_strings = ['Gender', 'Year', 'Division','Date', 'Time', 'File_Team', 'Team', 'opp_Team']
 box_score_schema_parsed = types.StructType(
     [types.StructField(field_name, types.StringType(), True) if field_name in box_score_columns_strings else types.StructField(field_name, types.IntegerType(), True) \

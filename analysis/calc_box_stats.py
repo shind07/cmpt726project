@@ -9,9 +9,7 @@ assert spark.version >= '2.3' # make sure we have Spark 2.3+
 spark.sparkContext.setLogLevel('WARN')
 
 # Set directory that contains data
-from config import data_directory
 from resources import box_score_schema_parsed
-DATA_DIR = os.path.join(os.environ['HOME'], data_directory)
 
 # Create Schema
 string_fields = ['Gender', 'Year', 'Division','Date', 'Time', 'File_Team', 'Team', 'opp_Team']
@@ -23,7 +21,8 @@ schema = types.StructType(
 # Main
 def main(input, output):
     # Read in CSV data and hold onto filename
-    df = spark.read.csv(input, schema=box_score_schema_parsed, header='true')
+    #df = spark.read.csv(input, schema=box_score_schema_parsed, header='true')
+    df = spark.read.parquet(input)
     # Sum all data by year for each team
     df = df \
         .withColumn('GP', functions.lit(1).cast(types.IntegerType())) \
@@ -52,16 +51,21 @@ def main(input, output):
         .withColumn('FTr', df['FTA'] / df['FGA']) \
         .withColumn('3PAr', df['3FGA'] / df['FGA']) \
         .withColumn('STL%', df['STL'] / df['opp_POSS']) \
-        .withColumn('BLK%', df['BLK'] / df['opp_FGA'])
+        .withColumn('BLK%', df['BLK'] / df['opp_FGA']) \
+        .withColumn('Pace', df['POSS'] / df['GP']) \
+        .withColumn('opp_Pace', df['opp_POSS'] / df['GP'])
 
     df = df \
         .withColumn('ORtg', df['PPP']*100) \
         .withColumn('DRtg', df['opp_PPP']*100)
 
-    df = df.withColumn('NetRtg', df['ORtg'] - df['DRtg'])
+    df = df.withColumn('NetRtg', df['ORtg'] - df['DRtg']).coalesce(1).cache()
 
     # Write out final data
-    df.coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
+    df.write.csv(output+'_teams', mode='overwrite', header=True)
+
+    df = df.groupby('Gender', 'Year', 'Division').avg()
+    df.toDF(*renameGroupedColumns(df.columns)).orderBy('Year', 'Gender', 'Division').write.csv(output+'_all', mode='overwrite', header=True)
 
 if __name__ == '__main__':
     input = sys.argv[1]
