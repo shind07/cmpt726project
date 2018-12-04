@@ -59,16 +59,18 @@ def main(input, output):
         .withColumn('ORtg', df['PPP']*100) \
         .withColumn('DRtg', df['opp_PPP']*100)
 
-    df = df.withColumn('NetRtg', df['ORtg'] - df['DRtg']).coalesce(1).cache()
+    df = df.withColumn('NetRtg', df['ORtg'] - df['DRtg']).cache()
 
     # Write out final data
-    df.write.csv(output+'_teams', mode='overwrite', header=True)
+    # df.write.csv(output+'-teams', mode='overwrite', header=True)
+    df.write.parquet(output+'-teams', mode='overwrite')
 
     df = df.groupby('Gender', 'Year', 'Division').avg()
 
     final_columns = ['Gender', 'Year', 'Division', 'PPP', 'opp_PPP', '3PAr', 'eFG%', 'Pace']
     df.toDF(*renameGroupedColumns(df.columns)).select(final_columns).orderBy('Year', 'Gender', 'Division') \
-        .write.csv(output+'_all', mode='overwrite', header=True)
+        .write.parquet(output+'-all', mode='overwrite')
+        # .write.csv(output+'_all', mode='overwrite', header=True)
 
 if __name__ == '__main__':
     input = sys.argv[1]
