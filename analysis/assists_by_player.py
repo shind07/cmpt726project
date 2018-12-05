@@ -22,13 +22,13 @@ def main(input, output):
                          | (df['Action'] == 'Dunk')) \
         .withColumn('ScoringPlayer', df['Player']) \
         .withColumn('ScoringAction', df['Action']) \
-        .select('Date', 'Seconds_Left', 'Division', 'Gender', 'Team', 'Action', 'ScoringPlayer', 'ScoringAction', 'File_Team')
+        .select('Year', 'Date', 'Seconds_Left', 'Division', 'Gender', 'Team', 'Action', 'ScoringPlayer', 'ScoringAction', 'File_Team')
     df_assist = df.filter(df['Action'] == 'Assist') \
         .withColumn('AssistingPlayer', df['Player']) \
         .select('Date', 'Seconds_Left', 'Division', 'Gender', 'Team', 'Action', 'AssistingPlayer', 'File_Team')
     df_joined = df_score.join(df_assist, ['Date', 'Seconds_Left', 'Division', 'Gender', 'Team', 'File_Team']) \
-        .select('ScoringAction', 'ScoringPlayer', 'AssistingPlayer')
-    df_joined = df_joined.groupby('ScoringPlayer', 'AssistingPlayer') \
+        .select('Gender','Division', 'Year', 'Team','ScoringAction', 'ScoringPlayer', 'AssistingPlayer')
+    df_joined = df_joined.groupby('Gender','Division', 'Year', 'Team','ScoringPlayer', 'AssistingPlayer') \
         .agg(functions.count('*').alias('TotalAssists'))
     df_joined = df_joined.sort(df_joined['TotalAssists'].desc())
 
