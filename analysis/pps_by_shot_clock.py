@@ -23,7 +23,7 @@ def calculate_PPS(type):
 def main(input, output):
     # Read in CSV data and hold onto filename
     #df = spark.read.csv(input, header='true', schema=play_by_play_schema_parsed)
-    df = spark.read.parquet(input, header='true', schema=play_by_play_schema_parsed).cache()
+    df = spark.read.parquet(input).cache()
 
     # PPS Analysis
     df_analysis_made = df.select('Action', 'Status', 'Shot_Clock').where((df['Status'] == 'made'))
