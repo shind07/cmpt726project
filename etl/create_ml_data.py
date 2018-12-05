@@ -72,7 +72,8 @@ def main(pbp_path, box_path, box_stats_path, home_path, output):
         df = df.join(box_stats_home, home_conds).drop(*['Year_Home','Gender_Home','Division_Home','Team_Home'])
         df = df.join(box_stats_away, away_conds).drop(*['Year_Away','Gender_Away','Division_Away','Team_Away'])#.show()
 
-
+        df = df.drop_duplicates).where(df['Year'] == '2017') \
+            .orderBy(['Year', 'Gender', 'Division', 'Date', 'Home_Team', 'Away_Team', 'Seconds_Left'], ascending=[0,0,0,0,0,0,0])
         df.write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
