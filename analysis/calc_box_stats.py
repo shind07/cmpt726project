@@ -63,14 +63,13 @@ def main(input, output):
 
     # Write out final data
     # df.write.csv(output+'-teams', mode='overwrite', header=True)
-    df.write.parquet(output+'-teams', mode='overwrite')
+    df.orderBy('Year', 'Gender', 'Division').coalesce(1).write.csv(output+'-teams', header=True, mode='overwrite')
 
     df = df.groupby('Gender', 'Year', 'Division').avg()
 
     final_columns = ['Gender', 'Year', 'Division', 'PPP', 'opp_PPP', '3PAr', 'eFG%', 'Pace']
     df.toDF(*renameGroupedColumns(df.columns)).select(final_columns).orderBy('Year', 'Gender', 'Division') \
-        .write.parquet(output+'-all', mode='overwrite')
-        # .write.csv(output+'_all', mode='overwrite', header=True)
+        .coalesce(1).write.csv(output+'_all', mode='overwrite', header=True)
 
 if __name__ == '__main__':
     input = sys.argv[1]

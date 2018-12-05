@@ -7,8 +7,8 @@ spark = SparkSession.builder.appName(app_name).getOrCreate()
 assert spark.version >= '2.3' # make sure we have Spark 2.3+
 spark.sparkContext.setLogLevel('WARN')
 
-from config import pbp_directory
 from resources import play_by_play_schema_parsed, box_score_schema_parsed
+
 # Main
 def main(pbp_path, box_path, box_stats_path, home_path, output):
     # Read in CSV data and hold onto filename
@@ -19,16 +19,10 @@ def main(pbp_path, box_path, box_stats_path, home_path, output):
         box = spark.read.parquet(box_path)
         home_teams = spark.read.parquet(home_path)
 
-        print(box.columns)
-        box.show()
-        print(home_teams.columns)
-        home_teams.show()
-        return
         # Join box scores with home teams
         box_home_join_columns = ['File_Team','Date','Gender', 'Division', 'Year']
         df = box.join(home_teams, box_home_join_columns)
-        df.show()
-        return
+
         #df.where((df['Home_Team'] =='LeTourneau') & (df['Away_Team'] == 'Ozarks (AR)')).show()
 
         # Determine which team won the game - the label for the ML data
@@ -51,7 +45,7 @@ def main(pbp_path, box_path, box_stats_path, home_path, output):
 
         # Get more advanced stats for each team
         box_stats_columns = ['Year', 'Gender', 'Division', 'Team', 'ORtg', 'DRtg', 'NetRtg', 'OREB%', 'DREB%', 'FT%', 'FTr', '3PAr', 'STL%', 'BLK%']
-        box_stats = spark.read.parquet(box_stats_path).select(box_stats_columns)
+        box_stats = spark.read.csv(box_stats_path, header=True).select(box_stats_columns)
         box_stats_home = box_stats.toDF(*[col + '_Home' for col in box_stats.columns])
         box_stats_away = box_stats.toDF(*[col + '_Away' for col in box_stats.columns])
 
@@ -72,7 +66,7 @@ def main(pbp_path, box_path, box_stats_path, home_path, output):
         df = df.join(box_stats_home, home_conds).drop(*['Year_Home','Gender_Home','Division_Home','Team_Home'])
         df = df.join(box_stats_away, away_conds).drop(*['Year_Away','Gender_Away','Division_Away','Team_Away'])#.show()
 
-        df = df.drop_duplicates).where(df['Year'] == '2017') \
+        df = df.drop_duplicates().where(df['Year'] == '2017') \
             .orderBy(['Year', 'Gender', 'Division', 'Date', 'Home_Team', 'Away_Team', 'Seconds_Left'], ascending=[0,0,0,0,0,0,0])
         df.write.csv(output, mode='overwrite', header=True, compression='gzip')
 

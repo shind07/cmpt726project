@@ -12,7 +12,8 @@ from resources import play_by_play_schema_parsed
 # Main
 def main(input, output):
     # Read in CSV data and hold onto filename
-    df = spark.read.csv(input, header='true', schema=play_by_play_schema_parsed)
+    #df = spark.read.csv(input, header='true', schema=play_by_play_schema_parsed)
+    df = spark.read.parquet(input)
     df.cache()
 
     # All shot attempts
