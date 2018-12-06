@@ -67,7 +67,7 @@ def main(input, output):
 
     df = df.groupby('Gender', 'Year', 'Division').avg()
 
-    final_columns = ['Gender', 'Year', 'Division', 'PPP', 'opp_PPP', '3PAr', 'eFG%', 'Pace']
+    final_columns = ['Gender', 'Year', 'Division', 'PPP', 'FTr', '3PAr', 'eFG%', 'Pace', 'OReb%', 'DReb%']
     df.toDF(*renameGroupedColumns(df.columns)).select(final_columns).orderBy('Year', 'Gender', 'Division') \
         .coalesce(1).write.csv(output+'_all', mode='overwrite', header=True)
 

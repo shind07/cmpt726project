@@ -32,7 +32,7 @@ def main(input, output):
         .agg(functions.count('*').alias('TotalAssists'))
     df_joined = df_joined.sort(df_joined['TotalAssists'].desc())
 
-    df_joined.coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
+    df_joined.where(df_joined['TotalAssists'] > 30).coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     input = sys.argv[1]
