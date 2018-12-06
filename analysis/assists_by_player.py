@@ -13,7 +13,7 @@ from resources import play_by_play_schema_parsed
 def main(input, output):
     # Read in CSV data and hold onto filename
     #df = spark.read.csv(input, header='true', schema=play_by_play_schema_parsed)
-    df = spark.read.parquet(input)
+    df = spark.read.parquet(input).drop('File_Team').drop_duplicates()
 
     # Assist Analysis
     df_score = df.filter((df['Action'] == 'Three Point Jumper') \
@@ -22,11 +22,11 @@ def main(input, output):
                          | (df['Action'] == 'Dunk')) \
         .withColumn('ScoringPlayer', df['Player']) \
         .withColumn('ScoringAction', df['Action']) \
-        .select('Year', 'Date', 'Seconds_Left', 'Division', 'Gender', 'Team', 'Action', 'ScoringPlayer', 'ScoringAction', 'File_Team')
+        .select('Year', 'Date', 'Seconds_Left', 'Division', 'Gender', 'Team', 'Action', 'ScoringPlayer', 'ScoringAction')
     df_assist = df.filter(df['Action'] == 'Assist') \
         .withColumn('AssistingPlayer', df['Player']) \
-        .select('Date', 'Seconds_Left', 'Division', 'Gender', 'Team', 'Action', 'AssistingPlayer', 'File_Team')
-    df_joined = df_score.join(df_assist, ['Date', 'Seconds_Left', 'Division', 'Gender', 'Team', 'File_Team']) \
+        .select('Date', 'Seconds_Left', 'Division', 'Gender', 'Team', 'Action', 'AssistingPlayer')
+    df_joined = df_score.join(df_assist, ['Date', 'Seconds_Left', 'Division', 'Gender', 'Team']) \
         .select('Gender','Division', 'Year', 'Team','ScoringAction', 'ScoringPlayer', 'AssistingPlayer')
     df_joined = df_joined.groupby('Gender','Division', 'Year', 'Team','ScoringPlayer', 'AssistingPlayer') \
         .agg(functions.count('*').alias('TotalAssists'))

@@ -29,39 +29,46 @@ def period_mins_left(period):
     else:
         return 0
 
+genders = ['Men', 'Women']
+years = ['2013','2014','2015','2016','2017']
+divisions = ['D1', 'D2', 'D3']
+
 # Main
 def main(input, output):
-    # Read in CSV data and hold onto filename
-    df = spark.read.csv(os.path.join(input, '*/*/*/*/*/Play by Play - All (Parsed).csv'), header='true', schema=play_by_play_schema_raw) \
-        .withColumn('filename', functions.input_file_name()) \
-        .withColumn('split', functions.split('filename', '/')) \
-        .withColumn('TimeLeft_split', functions.split('TimeLeft', ':')) \
-        .withColumn('Score_split', functions.split('Score', '-'))
+    for gender in genders:
+        for year in years:
+            for division in divisions:
+                # Read in CSV data and hold onto filename
+                df = spark.read.csv(os.path.join(input, '{}/{}/{}/*/*/Play by Play - All (Parsed).csv'.format(gender, year, division)), header='true', schema=play_by_play_schema_raw) \
+                    .withColumn('filename', functions.input_file_name()) \
+                    .withColumn('split', functions.split('filename', '/')) \
+                    .withColumn('TimeLeft_split', functions.split('TimeLeft', ':')) \
+                    .withColumn('Score_split', functions.split('Score', '-'))
+                print("Read {} {} {}".format(gender, year, division))
+                # Parse the file name into columns
+                df = df \
+                    .where((df['Action'] != 'Enters Game') & (df['Action'] != 'Leaves Game') ) \
+                    .withColumn('Gender', df['split'].getItem(4)) \
+                    .withColumn('Year', df['split'].getItem(5)) \
+                    .withColumn('Division', df['split'].getItem(6)) \
+                    .withColumn('FileTeam', df['split'].getItem(7)) \
+                    .withColumn('Seconds_Left', df['TimeLeft_split'].getItem(0).cast(types.IntegerType())*60 \
+                                +df['TimeLeft_split'].getItem(1).cast(types.IntegerType()) \
+                                +period_mins_left(df['Period'])*60) \
+                    .withColumn('Away_Score', df['Score_split'].getItem(0)) \
+                    .withColumn('Home_Score', df['Score_split'].getItem(1)) \
+                    .withColumn('File_Team', functions.regexp_replace('FileTeam', '%20', ' ')) \
 
-    # Parse the file name into columns
-    df = df \
-        .where((df['Action'] != 'Enters Game') & (df['Action'] != 'Leaves Game') ) \
-        .withColumn('Gender', df['split'].getItem(4)) \
-        .withColumn('Year', df['split'].getItem(5)) \
-        .withColumn('Division', df['split'].getItem(6)) \
-        .withColumn('FileTeam', df['split'].getItem(7)) \
-        .withColumn('Seconds_Left', df['TimeLeft_split'].getItem(0).cast(types.IntegerType())*60 \
-                    +df['TimeLeft_split'].getItem(1).cast(types.IntegerType()) \
-                    +period_mins_left(df['Period'])*60) \
-        .withColumn('Away_Score', df['Score_split'].getItem(0)) \
-        .withColumn('Home_Score', df['Score_split'].getItem(1)) \
-        .withColumn('File_Team', functions.regexp_replace('FileTeam', '%20', ' ')) \
+                df = df.withColumn('Home_Margin', (df['Home_Score'] - df['Away_Score']).cast(types.IntegerType()))
 
-    df = df.withColumn('Home_Margin', (df['Home_Score'] - df['Away_Score']).cast(types.IntegerType()))
+                final_columns = ['Gender','Year','Division', 'Date', 'Time', \
+                    'Score','Team', 'Player','Status', 'Action','Shot_Clock',\
+                    'Seconds_Left','Away_Score','Home_Score', 'Home_Margin', 'File_Team']
 
-    final_columns = ['Gender','Year','Division', 'Date', 'Time', \
-        'Score','Team', 'Player','Status', 'Action','Shot_Clock',\
-        'Seconds_Left','Away_Score','Home_Score', 'Home_Margin', 'File_Team']
+                df = df.select(final_columns)
 
-    df = df.select(final_columns)
-
-    #df.write.csv(output, mode='overwrite', header=True, compression='gzip')
-    df.drop_duplicates().write.parquet(output, mode='append', compression='gzip')
+                #df.write.csv(output, mode='overwrite', header=True, compression='gzip')
+                df.drop_duplicates().write.parquet(output, mode='append', compression='gzip')
 
 if __name__ == '__main__':
     input = sys.argv[1]

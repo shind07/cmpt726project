@@ -22,7 +22,7 @@ schema = types.StructType(
 def main(input, output):
     # Read in CSV data and hold onto filename
     #df = spark.read.csv(input, schema=box_score_schema_parsed, header='true')
-    df = spark.read.parquet(input)
+    df = spark.read.parquet(input).drop_duplicates()
     # Sum all data by year for each team
     df = df \
         .withColumn('GP', functions.lit(1).cast(types.IntegerType())) \
@@ -36,6 +36,7 @@ def main(input, output):
     # calculate new columns
     df = df \
         .withColumn('FT%', df['FT'] / df['FTA']) \
+        .withColumn('3FG%', df['3FG'] / df['3FGA']) \
         .withColumn('OREB%', (df['ORebs'] / (df['ORebs'] + df['opp_DRebs']))) \
         .withColumn('DREB%', functions.round((df['DRebs'] / (df['DRebs'] + df['opp_ORebs'])), 2)) \
         .withColumn('POSS', df['FGA'] + df['TO'] + 0.475*df['FTA'] - df['ORebs']) \
@@ -63,11 +64,11 @@ def main(input, output):
 
     # Write out final data
     # df.write.csv(output+'-teams', mode='overwrite', header=True)
-    df.orderBy('Year', 'Gender', 'Division').coalesce(1).write.csv(output+'-teams', header=True, mode='overwrite')
+    df.where(df['GP'] > 10).orderBy('Year', 'Gender', 'Division').coalesce(1).write.csv(output+'-teams', header=True, mode='overwrite')
 
     df = df.groupby('Gender', 'Year', 'Division').avg()
 
-    final_columns = ['Gender', 'Year', 'Division', 'PPP', 'FTr', '3PAr', 'eFG%', 'Pace', 'OReb%', 'DReb%']
+    final_columns = ['Gender', 'Year', 'Division', 'PPP', 'FTr','3FG%', '3PAr', 'eFG%', 'Pace', 'OReb%', 'DReb%', 'TOV%']
     df.toDF(*renameGroupedColumns(df.columns)).select(final_columns).orderBy('Year', 'Gender', 'Division') \
         .coalesce(1).write.csv(output+'_all', mode='overwrite', header=True)
 
