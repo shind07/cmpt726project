@@ -6,7 +6,6 @@
 /*/__pycache__/
 /output/
 /output*/
-/final*/
 *.pyc
 *.log
 .DS_Store
