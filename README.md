@@ -1,18 +1,18 @@
 # cmpt726project
 CMPT 726 Final Project
 
-# Execution:
-## 1) Preliminary Data Reading/Cleaning/Parsing
-### 1a)Parse Box Scores:
-`spark-submit etl/parse_box_score.py <input> <output>`
+## Execution:
+### 1) Preliminary Data Reading/Cleaning/Parsing
+#### 1a)Parse Box Scores:
+`spark-submit etl/parse_box_score.py <input> <output>`  
 Example: `cmpt732project> spark-submit etl/parse_box_score.py sample_data output/box-score`
 
 ### 1b)Parse Play-By-Plays:
-`spark-submit etl/parse_play_by_play.py <input> <output>`
+`spark-submit etl/parse_play_by_play.py <input> <output>`  
 Example: `cmpt732project> spark-submit etl/parse_play_by_play.py sample_data output/play-by-play`
 
 ### 1c) Get Home Teams:
-`spark-submit etl/parse_home_team.py <input> <output>`
+`spark-submit etl/parse_home_team.py <input> <output>`  
 Example:  `cmpt732project> spark-submit etl/parse_home_team.py sample_data output/home-teams`
 
 ## 2) Data analysis
