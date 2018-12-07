@@ -32,16 +32,20 @@ Example: `cmpt732project> spark-submit etl/create_ml_data.py output/pbp output/b
 
 #### 2c) Calculate Points Per Shot For Each Action:
 `spark-submit analysis/pps_by_action.py <play-by-play-data> <output>`
+
 Example: `cmpt732project>  spark-submit analysis/pps_by_action.py output/play-by-play output/pps-by-action`
 
 #### 2c) Calculate Points Per Shot By Time Left on Shot Clock:
 `spark-submit analysis/pps_by_shot_clock.py <play-by-play-data> <output>`
+
 Example: `cmpt732project>  spark-submit analysis/pps_by_shot_clock.py output/play-by-play output/pps-by-shot-clock`
 
 #### 2d) Calculate Number of Assists by Action
 `spark-submit analysis/assists_by_action.py <play-by-play-data> <output>`
+
 Example: `cmpt732project>  spark-submit analysis/assists_by_action.py output/play-by-play output/assists-by-action`
 
 #### 2e) Calculate Number of Assists to and from Specific Players
 `spark-submit analysis/assists_by_player.py <play-by-play-data> <output>`
+
 Example: `cmpt732project>  spark-submit analysis/assists_by_player.py output/play-by-play output/assists-by-player`
