@@ -72,5 +72,4 @@ def main(source_directory):
 
 if __name__ == '__main__':
     sc = spark.sparkContext
-    output = sys.argv[1]
     main(DATA_DIR)

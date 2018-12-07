@@ -53,4 +53,8 @@ Example: `cmpt732project>  spark-submit analysis/assists_by_player.py output/pla
 
 
 ## Simulating Streaming
-### 1) Preliminary Data Reading/Cleaning/Parsing
+### 1) Start the simulator:
+`cmpt732project> python streaming/simulator.py`
+
+### 2) Start Spark Streaming
+`cmpt732project> spark-submit streaming/consumer.py`
