@@ -6,7 +6,6 @@ app_name = "NCAA Basketball"
 spark = SparkSession.builder.appName(app_name).getOrCreate()
 assert spark.version >= '2.3' # make sure we have Spark 2.3+
 spark.sparkContext.setLogLevel('WARN')
-from resources import play_by_play_schema_parsed
 
 @functions.udf(returnType=types.IntegerType())
 def calculate_PPS(type):
@@ -21,9 +20,8 @@ def calculate_PPS(type):
 
 # Main
 def main(input, output):
-    # Read in CSV data and hold onto filename
-    #df = spark.read.csv(input, header='true', schema=play_by_play_schema_parsed)
-    df = spark.read.parquet(input)
+    # Read in data and cache because we will be splitting the data
+    df = spark.read.parquet(input).cache()
 
     # PPS Analysis
     df_analysis_made = df.select('Action', 'Status', 'Shot_Clock').where((df['Status'] == 'made'))
@@ -34,11 +32,12 @@ def main(input, output):
     all = missed.join(made, ['Action', 'Shot_Clock'])
     all = all.withColumn('attempts', all['count_made'] + all['count_missed']).withColumn('points_worth', calculate_PPS(all['Action']))
     all = all.withColumn('points', all['count_made']*all['points_worth'])
-    all.cache()
 
-    PPS_byAction = all.groupby('Action').agg(functions.sum(all['count_made']).alias('total_made'), functions.sum(all['attempts']).alias('total_attempts'), functions.sum(all['points']).alias('total_points'))
+    PPS_byAction = all.groupby('Action') \
+        .agg(functions.sum(all['count_made']).alias('total_made'), functions.sum(all['attempts']).alias('total_attempts'), functions.sum(all['points']).alias('total_points'))
     PPS_byAction = PPS_byAction.withColumn('PPS', PPS_byAction['total_points']/PPS_byAction['total_attempts'])
 
+    # Can coalesce because there will only be about 5 rows - one for each action.
     PPS_byAction.coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':

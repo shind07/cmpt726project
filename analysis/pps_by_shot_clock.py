@@ -6,7 +6,6 @@ app_name = "NCAA Basketball"
 spark = SparkSession.builder.appName(app_name).getOrCreate()
 assert spark.version >= '2.3' # make sure we have Spark 2.3+
 spark.sparkContext.setLogLevel('WARN')
-from resources import play_by_play_schema_parsed
 
 @functions.udf(returnType=types.IntegerType())
 def calculate_PPS(type):
@@ -21,8 +20,7 @@ def calculate_PPS(type):
 
 # Main
 def main(input, output):
-    # Read in CSV data and hold onto filename
-    #df = spark.read.csv(input, header='true', schema=play_by_play_schema_parsed)
+    # Read in data and cache because we will be splitting the data
     df = spark.read.parquet(input).cache()
 
     # PPS Analysis
@@ -35,11 +33,11 @@ def main(input, output):
     all = all.withColumn('attempts', all['count_made'] + all['count_missed']) \
         .withColumn('points_worth', calculate_PPS(all['Action']))
     all = all.withColumn('points', all['count_made']*all['points_worth'])
-    all.cache()
 
     PPS_byShot_Clock = all.groupby('Shot_Clock').agg(functions.sum(all['count_made']).alias('total_made'), functions.sum(all['attempts']).alias('total_attempts'), functions.sum(all['points']).alias('total_points'))
     PPS_byShot_Clock = PPS_byShot_Clock.withColumn('PPS', PPS_byShot_Clock['total_points']/PPS_byShot_Clock['total_attempts'])
 
+    # Can coalesce because there will only be about 30 rows - one for each second of shot clock
     PPS_byShot_Clock.orderBy(PPS_byShot_Clock['Shot_Clock']).coalesce(1).write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':

@@ -8,21 +8,10 @@ spark = SparkSession.builder.appName(app_name).getOrCreate()
 assert spark.version >= '2.3' # make sure we have Spark 2.3+
 spark.sparkContext.setLogLevel('WARN')
 
-# Set directory that contains data
-from resources import box_score_schema_parsed
-
-# Create Schema
-string_fields = ['Gender', 'Year', 'Division','Date', 'Time', 'File_Team', 'Team', 'opp_Team']
-schema = types.StructType(
-    [types.StructField(field_name, types.StringType(), True) if field_name in string_fields else types.StructField(field_name, types.IntegerType(), True) \
-    for field_name in box_score_columns]
-)
-
 # Main
 def main(input, output):
-    # Read in CSV data and hold onto filename
-    #df = spark.read.csv(input, schema=box_score_schema_parsed, header='true')
     df = spark.read.parquet(input)
+
     # Sum all data by year for each team
     df = df \
         .withColumn('GP', functions.lit(1).cast(types.IntegerType())) \
@@ -59,14 +48,12 @@ def main(input, output):
         .withColumn('ORtg', df['PPP']*100) \
         .withColumn('DRtg', df['opp_PPP']*100)
 
+    # Cache dataframe because we are writing to 2 outputs
     df = df.withColumn('NetRtg', df['ORtg'] - df['DRtg']).cache()
 
-    # Write out final data
-    # df.write.csv(output+'-teams', mode='overwrite', header=True)
+    # Write out final data - IT IS OK TO COALESCE BECAUSE WE HAVE GROUPED BY TEAM - DATA WILL BE NO MORE THAN A FEW THOUSAND ROWS OF CSV OUTPUT
     df.orderBy('Year', 'Gender', 'Division').coalesce(1).write.csv(output+'-teams', header=True, mode='overwrite')
-
     df = df.groupby('Gender', 'Year', 'Division').avg()
-
     final_columns = ['Gender', 'Year', 'Division', 'PPP', 'FTr', '3PAr', 'eFG%', 'Pace', 'OReb%', 'DReb%']
     df.toDF(*renameGroupedColumns(df.columns)).select(final_columns).orderBy('Year', 'Gender', 'Division') \
         .coalesce(1).write.csv(output+'_all', mode='overwrite', header=True)
