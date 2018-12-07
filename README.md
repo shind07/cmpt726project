@@ -61,9 +61,16 @@ Example: `cmpt732project>  spark-submit analysis/assists_by_player.py output/pla
 
 ## Running the Data Visualization Dashboard (Web Frontend)
 
-The dashboard is split up into 3 repositories: The frontend (HMTL/JavaScript), web server (Python Flask), and backend (Python).
+The dashboard is split up into 3 repositories: The [frontend](https://github.com/shind07/frontend.git) (HMTL/JavaScript), [web server](https://github.com/shind07/backend.git) (Python Flask), and [backend](https://github.com/shind07/flask-server.git) (Python).
 
 ### 1) Download the 3 repositories and place them in the same directory
+
+`cmpt732project> mkdir dashboard`  
+`cmpt732project> cd dashboard`  
+`dashboard> git clone https://github.com/shind07/frontend.git`  
+`dashboard> git clone https://github.com/shind07/backend.git`  
+`dashboard> git clone https://github.com/shind07/flask-server.git`  
+
 
 ### 2) Install the requirements
 
