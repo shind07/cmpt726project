@@ -71,7 +71,10 @@ The dashboard is split up into 3 repositories: The [frontend](https://github.com
 `dashboard> git clone https://github.com/shind07/backend.git`  
 `dashboard> git clone https://github.com/shind07/flask-server.git`  
 
-
 ### 2) Install the requirements
+
+Optional: Use a virtual environment
+On MacOS:
+`dashboard> pip install -r backend/requirements.txt`
 
 ### 3) Run the backend and frontend
