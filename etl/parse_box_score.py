@@ -7,16 +7,18 @@ spark = SparkSession.builder.appName(app_name).getOrCreate()
 assert spark.version >= '2.3' # make sure we have Spark 2.3+
 spark.sparkContext.setLogLevel('WARN')
 
-from resources import box_score_schema_raw
+from resources import box_score_schema
 
 # Main
 def main(input, output):
     # Read in CSV data and hold onto filename
-    df = spark.read.csv(os.path.join(input, '*/*/*/*/*/Box Score - All (Parsed).csv'), header='true', schema=box_score_schema_raw) \
+    fname = '*/*/*/*/*/Box Score - All (Parsed).csv'
+    df = spark.read.csv(os.path.join(input, fname), header=True, schema=box_score_schema) \
         .withColumn('filename', functions.input_file_name()) \
         .withColumn('split', functions.split('filename', '/'))
 
-    df = df.where(df['Player'] == 'Totals')#.repartition(100, 'Team')
+    # Grab only data for the team, not individual players
+    df = df.where(df['Player'] == 'Totals')
 
     # Parse the file name into columns, fill 'null' entries with 0
     df = df \
@@ -27,10 +29,10 @@ def main(input, output):
         .withColumnRenamed('Tot Reb', 'Tot_Reb') \
         .na.fill(0)
 
+    # Reformat the team name
     teams = df.withColumn('File_Team', functions.regexp_replace('File_Team2', '%20', ' ')) \
 
-    # Make two copies of the data and join the games together so
-    # each row will have full data for the game.
+    # Make two copies of the data and join the games together so each row will have full data for the game.
     new_cols = ['opp_' + col for col in teams.columns]
     teams2 = teams.toDF(*new_cols)
     join_conditions = [teams['File_Team'] == teams2['opp_File_Team'], teams['Time'] == teams2['opp_Time'], \
@@ -46,7 +48,6 @@ def main(input, output):
     full_data.select(final_columns) \
         .where((full_data['PTS'] != 0) & (full_data['opp_PTS'] != 0)) \
         .write.parquet(output, mode='append', compression='gzip')
-    #.write.csv(output, mode='overwrite', header=True, compression='gzip')
 
 if __name__ == '__main__':
     input = sys.argv[1]

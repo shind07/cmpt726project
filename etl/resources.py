@@ -15,7 +15,7 @@ def renameGroupedColumns(cols):
     '''
     return [c[c.find("(")+1:c.find(")")] if '(' in c else c for c in cols]
 
-play_by_play_schema_raw = types.StructType([
+play_by_play_schema = types.StructType([
     types.StructField('Date', types.StringType(), False),
     types.StructField('Time', types.StringType(), False),
     types.StructField('Period', types.StringType(), False),
@@ -50,7 +50,7 @@ play_by_play_schema_parsed = types.StructType([
     types.StructField('File_Team', types.StringType(), False),
 ])
 
-box_score_schema_raw = types.StructType([
+box_score_schema = types.StructType([
     types.StructField('Date', types.StringType(), False),
     types.StructField('Time', types.StringType(), False),
     types.StructField('Period', types.StringType(), False),
