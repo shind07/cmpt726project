@@ -1,6 +1,8 @@
 # CMPT 732 Final Project
 ### Eugene Borissov and Scott Hind
 
+This document outlines how to run our project and view the web frontend.
+
 ## Executing the Data Pipeline
 ### 1) Preliminary Data Reading/Cleaning/Parsing
 #### 1a) Parse Box Scores:
