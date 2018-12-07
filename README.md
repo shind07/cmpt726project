@@ -73,8 +73,25 @@ The dashboard is split up into 3 repositories: The [frontend](https://github.com
 
 ### 2) Install the requirements
 
-Optional: Use a virtual environment
-On MacOS:
+Optional: Use a virtual environment  
+On MacOS:  
 `dashboard> pip install -r backend/requirements.txt`
 
-### 3) Run the backend and frontend
+### 3) Run the server and frontend
+
+Server:  
+`dashboard> cd flask-server`    
+`flask-server> gunicorn start:app --reload -c gunicorn.py`  
+
+Frontend:  
+`dashboard> cd frontend`    
+
+Python2:  
+`frontend> python -m SimpleHTTPServer 8000`  
+
+python3:
+`frontend> python -m http.server 8000`  
+
+### 4) Use the Dashboard
+
+Go to localhost:8000 in your browser of choice.
