@@ -49,3 +49,8 @@ Example: `cmpt732project>  spark-submit analysis/assists_by_action.py output/pla
 `spark-submit analysis/assists_by_player.py <play-by-play-data> <output>`
 
 Example: `cmpt732project>  spark-submit analysis/assists_by_player.py output/play-by-play output/assists-by-player`
+
+
+
+## Simulating Streaming
+### 1) Preliminary Data Reading/Cleaning/Parsing

@@ -9,7 +9,7 @@ spark.sparkContext.setLogLevel('WARN')
 
 DATA_DIR = '/Users/shind/Regular-stream'
 
-schema = types.StructType([
+box_schema = types.StructType([
     types.StructField('Date', types.StringType(), False),
     types.StructField('Time', types.StringType(), False),
     types.StructField('Period', types.StringType(), False),
@@ -34,19 +34,43 @@ schema = types.StructType([
     types.StructField('Fouls', types.IntegerType()),
 ])
 
-# Main
-def main(source_directory, output_directory):
-    print("Listening to {}".format(source_directory))
-    df = spark.readStream \
-        .schema(schema) \
-        .csv(os.path.join(DATA_DIR, '*/*/*/*/*/Box Score - All (Parsed).csv'), header='true')#csv(source_directory, header='true') #.load()
+play_by_play_schema = types.StructType([
+    types.StructField('Date', types.StringType(), False),
+    types.StructField('Time', types.StringType(), False),
+    types.StructField('Period', types.StringType(), False),
+    types.StructField('TimeLeft', types.StringType(), False),
+    types.StructField('Score', types.StringType(), False),
+    types.StructField('Team', types.StringType(), False),
+    types.StructField('Player', types.StringType(), False),
+    types.StructField('Status', types.StringType(), False),
+    types.StructField('Action', types.StringType(), False),
+    types.StructField('Shot_Clock', types.IntegerType(), False),
+    types.StructField('Lineup', types.StringType(), False),
+    types.StructField('Lineup_Time', types.StringType(), False),
+])
 
-    stream = df.writeStream.format('console') \
-            .outputMode('append').start()
-    stream.awaitTermination(3600)
+# Main
+def main(source_directory):
+    print("Listening to {}".format(source_directory))
+    box_df = spark.readStream \
+        .schema(box_schema) \
+        .csv(os.path.join(DATA_DIR, '*/*/*/*/*/Box Score - All (Parsed).csv'), header='true')
+
+    pbp_df = spark.readStream \
+        .schema(play_by_play_schema) \
+        .csv(os.path.join(DATA_DIR, '*/*/*/*/*/Play by Play - All (Parsed).csv'), header='true')
+
+    box_stream = box_df.writeStream.format('console') \
+        .outputMode('append').start()
+
+    pbp_stream = pbp_df.writeStream.format('console') \
+        .outputMode('append').start()
+
+    box_stream.awaitTermination(3600)
+    pbp_stream.awaitTermination(3600)
 
 
 if __name__ == '__main__':
     sc = spark.sparkContext
     output = sys.argv[1]
-    main(DATA_DIR, output)
+    main(DATA_DIR)
