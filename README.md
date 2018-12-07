@@ -86,10 +86,10 @@ Server:
 Frontend:  
 `dashboard> cd frontend`    
 
-Python2:  
+if using Python2:
 `frontend> python -m SimpleHTTPServer 8000`  
 
-python3:
+if using Python3:
 `frontend> python -m http.server 8000`  
 
 ### 4) Use the Dashboard
