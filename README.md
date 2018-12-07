@@ -19,14 +19,19 @@ Example: `cmpt732project> spark-submit etl/parse_play_by_play.py sample_data out
 Example:  `cmpt732project> spark-submit etl/parse_home_team.py sample_data output/home-teams`
 
 #### 1c) Create Dataset for Machine Learning:
-`spark-submit etl/create_ml_data.py <input> <output>`
+
 
 Example:  `cmpt732project> spark-submit etl/parse_home_team.py sample_data output/home-teams`
 
-### 2) Data analysis
-Calculate Box Score Stats:
-spark-submit analysis/calc_box_stats.py output/box-test output/box-stats-test
-spark-submit analysis/calc_box_stats.py <box-directory> <output>
+### 2) More ETL and Data analysis
+#### 2a) Calculate Box Score Advanced Stats:
+`spark-submit analysis/parse_box_score.py <box-score-data> <output>`  
+Example: `spark-submit analysis/calc_box_stats.py output/box output/box-stats`
+
+#### 2b) Create Dataset for Machine Learning:
+`spark-submit etl/create_ml_data.py <play-by-play-data> <box-score-data> <home-team-data> <output>`
+Example: `spark-submit etl/create_ml_data.py output/pbp output/box output/box-stats-teams output/home-teams output/ml`
+
 
 Create data for Machine Learning Project:
 spark-submit etl/create_ml_data.py output/pbp-test output/box-test output/box-stats-test-teams output/home-teams-test output/ml
