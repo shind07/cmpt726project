@@ -1,5 +1,5 @@
-# cmpt726project
-CMPT 726 Final Project
+# CMPT 732 Final Project
+### Eugene Borissov and Scott Hind
 
 ## Executing the Data Pipeline
 ### 1) Preliminary Data Reading/Cleaning/Parsing
