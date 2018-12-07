@@ -1,0 +1,31 @@
+Abbreviation	Full Name	Description
+FGM	Field Goals Made	Number of field goals (shots) made
+FGA	Field Goals Attempted	Number of field goals (shots) attempted
+3FG	3 Point Field Goals Made	Number of 3 point field goals (shots) made
+3FGA	3 Point Field Goals Attempted	Number of 3 point field goals (shots) attempted
+FT	Free Throws Made	Number of free throws made
+FTA	Free Throws Attempted	Number of free throws attempted
+PTS	Points	Number of points scored
+Orebs	Offensive Rebounds	Number of a team's own missed field goals that they rebounded
+Drebs	Defensive Rebounds	Number of a team's opponents missed field goals that they rebounded
+Tot_Reb	Total Rebounds	Offensive rebounds plus defensive rebounds
+AST	Assists	Number of made shots that were assisted
+STL	Steals	Number of times a team stole the ball from their opponent
+BLK	Blocks	Number of times a team blocked an opponents shot
+Fouls	Fouls	Number of times a team fouled their opponent
+FT%	Free Throw Percentage	Percent of free throw attempts made
+OREB%	Offensive Rebound Percentage	Percent of all possible offensive rebounds a team grabbed
+DREB%	Defensive Rebound Percentage	Percent of all possible defensive rebounds a team grabbed
+POSS	Possesions	Number of possessions in a game
+AST%	Assist Percentage	Percent of made field goals that were assists
+PPP	Points Per Possession	Average number of points scored per possession
+eFG%	Effective Field Goal Percentage	"Percent of field goals made, weighted for shot value"
+TOV%	Turnover Percentage	Percent of possessions a team turned the ball over
+FTr	Free Throw Rate	Percent of shot attempts that were free throws
+3PAr	3 Point Field Goal Rate	Percent of shot attempts that were 3 pointers
+STL%	Steal Rate	Percent of opponent possessions a team stole the ball
+BLK%	Block Percentage	Percent of opponent shots a team blocks
+Pace	Pace	Average number of possessions per game
+Ortg	Offensive Rating	Average number of points scored per 100 possesions
+Drtg	Defensive Rating	Average number of opponent points scored per 100 possesssions
+NetRtg	Net Rating	Offensive rating minus defensive rating
