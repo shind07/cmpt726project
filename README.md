@@ -58,3 +58,13 @@ Example: `cmpt732project>  spark-submit analysis/assists_by_player.py output/pla
 
 ### 2) Start Spark Streaming
 `cmpt732project> spark-submit streaming/consumer.py`
+
+## Running the Data Visualization Dashboard (Web Frontend)
+
+The dashboard is split up into 3 repositories: The frontend (HMTL/JavaScript), web server (Python Flask), and backend (Python).
+
+### 1) Download the 3 repositories and place them in the same directory
+
+### 2) Install the requirements
+
+### 3) Run the backend and frontend
