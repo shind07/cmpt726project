@@ -94,4 +94,5 @@ if using Python3:
 
 ### 4) Use the Dashboard
 
-Go to localhost:8000 in your browser of choice.
+Go to localhost:8000 in your browser of choice.  
+For information about the different stats/parameters on the dashboard, refer to glossary.csv.
