@@ -52,6 +52,7 @@ def main(input, output):
     df = df.withColumn('NetRtg', df['ORtg'] - df['DRtg']).cache()
 
     # Write out final data - IT IS OK TO COALESCE BECAUSE WE HAVE GROUPED BY TEAM - DATA WILL BE NO MORE THAN A FEW THOUSAND ROWS OF CSV OUTPUT
+    # First write out the data for all teams, then group data and write out summary data.
     df.orderBy('Year', 'Gender', 'Division').coalesce(1).write.csv(output+'-teams', header=True, mode='overwrite')
     df = df.groupby('Gender', 'Year', 'Division').avg()
     final_columns = ['Gender', 'Year', 'Division', 'PPP', 'FTr', '3PAr', 'eFG%', 'Pace', 'OReb%', 'DReb%']

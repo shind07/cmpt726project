@@ -1,7 +1,7 @@
 # CMPT 732 Final Project
 ### Eugene Borissov and Scott Hind
 
-This document outlines how to run our project and view the web frontend.
+This document outlines how to run our project and view the web frontend. You can find sample data to use in the data folder (data/sample_data.zip).
 
 ## Executing the Data Pipeline
 ### 1) Preliminary Data Reading/Cleaning/Parsing
@@ -30,7 +30,7 @@ Example: `cmpt732project> spark-submit analysis/calc_box_stats.py output/box out
 #### 2b) Create Dataset for Machine Learning:
 `spark-submit etl/create_ml_data.py <play-by-play-data> <box-score-data> <home-team-data> <output>`
 
-Example: `cmpt732project> spark-submit etl/create_ml_data.py output/pbp output/box output/box-stats-teams output/home-teams output/ml`
+Example: `cmpt732project> spark-submit etl/create_ml_data.py output/play-by-play output/box output/box-stats-teams output/home-teams output/ml`
 
 #### 2c) Calculate Points Per Shot For Each Action:
 `spark-submit analysis/pps_by_action.py <play-by-play-data> <output>`
