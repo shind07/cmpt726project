@@ -6,7 +6,7 @@ spark = SparkSession.builder.appName('colour prediction').getOrCreate()
 spark.sparkContext.setLogLevel('WARN')
 assert spark.version >= '2.3' # make sure we have Spark 2.3+
 
-from pyspark.ml import Pipeline
+from pyspark.ml import Pipeline, PipelineModel
 from pyspark.ml.classification import RandomForestClassifier
 from pyspark.ml.feature import StringIndexer, VectorAssembler, SQLTransformer
 from pyspark.ml.regression import DecisionTreeRegressor, RandomForestRegressor
@@ -27,10 +27,14 @@ nn_schema = types.StructType(
      else types.StructField(field_name, types.FloatType(), False) \
     for field_name in cols]
 )
+
+firstelement= functions.udf(lambda v:float(v[0]),types.FloatType())
+secondelement= functions.udf(lambda v:float(v[1]),types.FloatType())
+
 def main(inputs, output):
     # Load data, split into training and validation sets
     data = spark.read.csv(inputs, header=True, schema=nn_schema)
-    data = data.select('Home_Score', 'Away_Score', 'Home_Margin', 'Seconds_Left', 'Home_Team_Win')
+    data = data.select('Home_Team', 'Away_Team', 'Home_Score', 'Away_Score', 'Home_Margin', 'Seconds_Left', 'Home_Team_Win')
 
 
     train, validation = data.randomSplit([0.75, 0.25])
@@ -42,11 +46,24 @@ def main(inputs, output):
     classifier = RandomForestClassifier(labelCol='Home_Team_Win', maxBins=200, maxDepth=5)
 
     pipeline = Pipeline(stages=[assembler, classifier])
-    model = pipeline.fit(train)
-    model.write().overwrite().save(output)
+    model = PipelineModel.load('testnet')
+    #model = pipeline.fit(train)
+    #model.write().overwrite().save(output)
     predictions = model.transform(validation)
-    predictions.write.csv(output + '-predictions', mode='overwrite', header='True' )
-    #predictions.show()
+    df = predictions \
+        .withColumn('p_lose', firstelement(predictions['probability'])) \
+        .withColumn('p_win', secondelement(predictions['probability'])) \
+        .withColumn('minute', (predictions['Seconds_Left'] / 60).cast(types.IntegerType())) \
+        .withColumn('wrong', functions.abs(predictions['Home_Team_Win'] - predictions['prediction']))
+
+    df = df.drop('features','rawPrediction', 'probability') \
+        # .where(df['Home_Team'] == 'Duke') \
+    #df.write.csv(output + '-predictions', mode='overwrite', header='True' )
+
+    df = df.groupby(df['minute']).agg(functions.count(functions.lit(1)).alias("total"), functions.sum('wrong').alias('wrong'))#.
+    df = df.withColumn('accuracy', 1 - (df['wrong'] / df['total']))
+    df.orderBy(df['minute'], ascending=0).coalesce(1).write.csv(output + '-predictions', mode='overwrite', header='True' )
+    #df.where(df['wrong'] == 1).show()
     #predictions.select('Home_Score', 'Away_Score', 'Home_Margin', 'Seconds_Left', 'Home_Team_Win', 'prediction', 'probability').show(10)
 
 
